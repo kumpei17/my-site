@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Camera Calc Pro</title>
+    <style>
+        /* --- Base Variables (Light Mode Default) --- */
+        :root {
+            --bg-color: #FAFAFA;
+            --text-color: #333333;
+            --sub-text: #8E8E93;
+            --accent-color: #007AFF;
+            --input-bg: #FFFFFF;
+            --control-bg: #EEEEEF;
+            --border-radius: 10px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            --shadow: 0 4px 16px rgba(0,0,0,0.03);
+            --focus-shadow: 0 8px 24px rgba(0,122,255,0.15);
+            --visualizer-border: #333333;
+        }
+
+        /* --- Dark Mode Variables --- */
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --text-color: #F0F0F0;
+            --sub-text: #888888;
+            --accent-color: #0A84FF;
+            --input-bg: #1C1C1E;
+            --control-bg: #2C2C2E;
+            --shadow: 0 4px 16px rgba(0,0,0,0.3);
+            --focus-shadow: 0 8px 24px rgba(10, 132, 255, 0.3);
+            --visualizer-border: #F0F0F0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.5;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* --- Header & Tools --- */
+        header {
+            margin-bottom: 32px;
+            text-align: center;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+        }
+
+        h1 {
+            font-weight: 300;
+            font-size: 20px;
+            letter-spacing: 0.05em;
+            color: var(--text-color);
+            margin: 0;
+        }
+
+        /* Top Right Controls */
+        .top-controls {
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            padding: 4px;
+            color: var(--text-color);
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .icon-btn:hover { opacity: 1; }
+
+        .lang-select {
+            appearance: none;
+            background: var(--input-bg);
+            border: 1px solid var(--sub-text);
+            border-radius: 16px;
+            padding: 4px 10px;
+            font-size: 11px;
+            color: var(--text-color);
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        /* --- Segmented Control --- */
+        .segmented-control {
+            display: flex;
+            background-color: var(--control-bg);
+            padding: 4px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+        }
+
+        .segment-btn {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-color);
+            cursor: pointer;
+            z-index: 2;
+            transition: all 0.2s;
+            user-select: none;
+            border-radius: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .segment-btn.active {
+            background-color: var(--input-bg);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        /* --- Form Elements --- */
+        .form-group {
+            margin-bottom: 20px;
+            transition: var(--transition);
+            overflow: hidden;
+            opacity: 1;
+            max-height: 200px;
+        }
+
+        .form-group.hidden {
+            opacity: 0;
+            max-height: 0;
+            margin-bottom: 0;
+            pointer-events: none;
+        }
+
+        label {
+            display: block;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--sub-text);
+            margin-bottom: 6px;
+            padding-left: 4px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            font-family: inherit;
+            color: var(--text-color);
+            background-color: var(--input-bg);
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+            appearance: none;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            box-shadow: var(--focus-shadow);
+            transform: translateY(-1px);
+        }
+
+        /* iOS Input Zoom Fix & Keypad optimization */
+        input[type="number"] {
+            -moz-appearance: textfield; /* Firefox reset */
+        }
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .unit {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            color: var(--sub-text);
+            pointer-events: none;
+        }
+
+        .custom-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .custom-inputs.active {
+            max-height: 100px;
+            opacity: 1;
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0; height: 0; 
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 5px solid var(--sub-text);
+            pointer-events: none;
+        }
+
+        /* --- Results Section --- */
+        .results-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .main-result {
+            margin-bottom: 20px;
+        }
+        
+        .result-label-main {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--sub-text);
+            margin-bottom: 4px;
+        }
+
+        .result-value-main {
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--accent-color);
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+        }
+
+        /* Sub Results */
+        .sub-result {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+            max-width: 320px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .result-item-sub .label {
+            font-size: 9px;
+            color: var(--sub-text);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            letter-spacing: 0.05em;
+        }
+        .result-item-sub .value {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        /* Lens Recommendation Badge */
+        .rec-lens-container {
+            margin-top: -10px;
+            margin-bottom: 24px;
+            height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: all 0.3s;
+        }
+        .rec-lens-container.visible {
+            height: auto;
+            opacity: 1;
+        }
+        .rec-lens-badge {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: #FFFFFF;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Visualizer */
+        .visualizer {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        #aspect-box {
+            border: 1px solid var(--visualizer-border);
+            width: 100px;
+            height: 66px;
+            transition: all 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+        }
+
+        #aspect-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 9px;
+            color: var(--sub-text);
+            white-space: nowrap;
+        }
+
+        .animate-in {
+            animation: fadeIn 0.4s ease forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Camera Calc</h1>
+        <div class="top-controls">
+            <button class="icon-btn" id="theme-toggle" onclick="toggleTheme()">☀</button>
+            <select id="lang-select" class="lang-select">
+                <option value="ja">JP</option>
+                <option value="en">EN</option>
+                <option value="zh">ZH</option>
+            </select>
+        </div>
+    </header>
+
+    <div class="segmented-control">
+        <div class="segment-btn active" onclick="setMode('fov')" data-i18n="mode_fov">撮影範囲</div>
+        <div class="segment-btn" onclick="setMode('focal')" data-i18n="mode_focal">焦点距離</div>
+        <div class="segment-btn" onclick="setMode('dist')" data-i18n="mode_dist">被写体距離</div>
+    </div>
+
+    <div class="controls">
+        
+        <div class="form-group" id="group-sensor">
+            <label data-i18n="label_sensor">Sensor Size</label>
+            <div class="input-wrapper">
+                <select id="sensor-select">
+                    <option value="full" data-i18n="sensor_full">Full Frame (35mm)</option>
+                    <option value="aps-c" data-i18n="sensor_apsc">APS-C</option>
+                    <option value="m43" data-i18n="sensor_m43">Micro 4/3</option>
+                    <option value="custom" data-i18n="sensor_custom">Custom</option>
+                </select>
+                <div class="select-arrow"></div>
+            </div>
+            <div class="custom-inputs" id="custom-sensor-group">
+                <div class="input-wrapper">
+                    <input type="number" id="sensor-w" placeholder="Width" step="0.1" inputmode="decimal">
+                    <span class="unit">mm</span>
+                </div>
+                <div class="input-wrapper">
+                    <input type="number" id="sensor-h" placeholder="Height" step="0.1" inputmode="decimal">
+                    <span class="unit">mm</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group" id="group-focal">
+            <label data-i18n="label_focal">Focal Length</label>
+            <div class="input-wrapper">
+                <input type="number" id="focal-length" placeholder="0" inputmode="decimal">
+                <span class="unit">mm</span>
+            </div>
+        </div>
+
+        <div class="form-group" id="group-dist">
+            <label data-i18n="label_dist">Distance to Subject</label>
+            <div class="input-wrapper">
+                <input type="number" id="distance" placeholder="0" inputmode="decimal">
+                <span class="unit">mm</span>
+            </div>
+        </div>
+
+        <div class="form-group hidden" id="group-target-w">
+            <label data-i18n="label_target_w">Target Width</label>
+            <div class="input-wrapper">
+                <input type="number" id="target-width" placeholder="0" inputmode="decimal">
+                <span class="unit">mm</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="results-container animate-in">
+        
+        <div class="main-result">
+            <div class="result-label-main" id="label-main">SHOOTING WIDTH</div>
+            <div class="result-value-main">
+                <span id="val-main">---</span><span class="result-unit">mm</span>
+            </div>
+        </div>
+
+        <div class="rec-lens-container" id="rec-lens-box">
+            <div class="rec-lens-badge">
+                <span data-i18n="label_rec">Rec:</span> <span id="val-rec-lens">50mm</span>
+            </div>
+        </div>
+
+        <div class="sub-result">
+            <div class="result-item-sub">
+                <div class="label" id="label-sub-1">HEIGHT</div>
+                <div class="value"><span id="val-sub-1">---</span> mm</div>
+            </div>
+            <div class="result-item-sub">
+                <div class="label" data-i18n="res_mag">MAGNIFICATION</div>
+                <div class="value"><span id="val-mag">---</span> x</div>
+            </div>
+        </div>
+
+        <div class="visualizer">
+            <div id="aspect-box">
+                <div id="aspect-label"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // --- Data & Config ---
+    const translations = {
+        ja: {
+            mode_fov: "撮影範囲", mode_focal: "焦点距離", mode_dist: "被写体距離",
+            label_sensor: "センサーサイズ", label_focal: "焦点距離", label_dist: "被写体までの距離", label_target_w: "撮りたい範囲 (幅)",
+            sensor_full: "フルサイズ (35mm)", sensor_apsc: "APS-C", sensor_m43: "マイクロフォーサーズ", sensor_custom: "カスタム",
+            res_width: "撮影範囲 (幅)", res_height: "撮影範囲 (高さ)", res_req_lens: "必要な焦点距離", res_req_dist: "必要な距離", res_mag: "撮影倍率",
+            label_rec: "推奨レンズ: "
+        },
+        en: {
+            mode_fov: "Field of View", mode_focal: "Focal Length", mode_dist: "Distance",
+            label_sensor: "Sensor Size", label_focal: "Focal Length", label_dist: "Distance to Subject", label_target_w: "Target Width",
+            sensor_full: "Full Frame (35mm)", sensor_apsc: "APS-C", sensor_m43: "Micro 4/3", sensor_custom: "Custom",
+            res_width: "Shooting Width", res_height: "Shooting Height", res_req_lens: "Required Lens", res_req_dist: "Required Distance", res_mag: "Magnification",
+            label_rec: "Rec: "
+        },
+        zh: {
+            mode_fov: "拍摄范围", mode_focal: "焦距计算", mode_dist: "物距计算",
+            label_sensor: "传感器尺寸", label_focal: "焦距", label_dist: "拍摄距离", label_target_w: "目标宽度",
+            sensor_full: "全画幅 (35mm)", sensor_apsc: "APS-C 画幅", sensor_m43: "M4/3 画幅", sensor_custom: "自定义",
+            res_width: "拍摄宽度", res_height: "拍摄高度", res_req_lens: "所需焦距", res_req_dist: "所需距离", res_mag: "拍摄倍率",
+            label_rec: "推荐镜头: "
+        }
+    };
+
+    const sensors = {
+        'full': { w: 36, h: 24 },
+        'aps-c': { w: 23.6, h: 15.6 },
+        'm43': { w: 17.3, h: 13 }
+    };
+
+    // Lens Candidates
+    const lensCandidates = [
+        { v: 24, l: "24mm" },
+        { v: 28, l: "28mm" },
+        { v: 35, l: "35mm" },
+        { v: 50, l: "50mm" },
+        { v: 85, l: "85mm" },
+        { v: 100, l: "100mm" },
+        { v: 140, l: "100mm + 1.4x" }, 
+        { v: 200, l: "200mm / 100+2x" }
+    ];
+
+    // --- State ---
+    let currentMode = 'fov'; 
+    let currentLang = 'ja'; 
+    let isDark = false;
+
+    // --- Elements ---
+    const themeBtn = document.getElementById('theme-toggle');
+    const langSelect = document.getElementById('lang-select');
+    const sensorSelect = document.getElementById('sensor-select');
+    const customGroup = document.getElementById('custom-sensor-group');
+    const inputSensorW = document.getElementById('sensor-w');
+    const inputSensorH = document.getElementById('sensor-h');
+    const inputFocal = document.getElementById('focal-length');
+    const inputDist = document.getElementById('distance');
+    const inputTargetW = document.getElementById('target-width');
+
+    const groupFocal = document.getElementById('group-focal');
+    const groupDist = document.getElementById('group-dist');
+    const groupTargetW = document.getElementById('group-target-w');
+
+    const labelMain = document.getElementById('label-main');
+    const valMain = document.getElementById('val-main');
+    const labelSub1 = document.getElementById('label-sub-1');
+    const valSub1 = document.getElementById('val-sub-1');
+    const valMag = document.getElementById('val-mag');
+    
+    const recLensBox = document.getElementById('rec-lens-box');
+    const valRecLens = document.getElementById('val-rec-lens');
+    
+    const aspectBox = document.getElementById('aspect-box');
+    const aspectLabel = document.getElementById('aspect-label');
+
+    // --- Logic: Theme ---
+    function toggleTheme() {
+        isDark = !isDark;
+        if (isDark) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            themeBtn.textContent = '🌙';
+        } else {
+            document.documentElement.removeAttribute('data-theme');
+            themeBtn.textContent = '☀';
+        }
+    }
+
+    // --- Logic: Language ---
+    function updateLanguage() {
+        currentLang = langSelect.value;
+        const t = translations[currentLang];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) el.textContent = t[key];
+        });
+        updateDynamicLabels();
+    }
+
+    function updateDynamicLabels() {
+        const t = translations[currentLang];
+        if (currentMode === 'fov') {
+            labelMain.textContent = t.res_width;
+            labelSub1.textContent = t.res_height;
+        } else if (currentMode === 'focal') {
+            labelMain.textContent = t.res_req_lens;
+            labelSub1.textContent = t.res_height;
+        } else if (currentMode === 'dist') {
+            labelMain.textContent = t.res_req_dist;
+            labelSub1.textContent = t.res_height;
+        }
+    }
+
+    // --- Logic: Mode ---
+    function setMode(mode) {
+        currentMode = mode;
+        const modes = ['fov', 'focal', 'dist'];
+        document.querySelectorAll('.segment-btn').forEach((btn, idx) => {
+            if(idx === modes.indexOf(mode)) btn.classList.add('active');
+            else btn.classList.remove('active');
+        });
+
+        if (mode === 'fov') {
+            show(groupFocal); show(groupDist); hide(groupTargetW); hide(recLensBox);
+        } else if (mode === 'focal') {
+            hide(groupFocal); show(groupDist); show(groupTargetW); show(recLensBox);
+        } else if (mode === 'dist') {
+            show(groupFocal); hide(groupDist); show(groupTargetW); hide(recLensBox);
+        }
+        updateDynamicLabels();
+        calculate();
+    }
+
+    function hide(el) { el.classList.add('hidden'); if(el.classList.contains('rec-lens-container')) el.classList.remove('visible'); }
+    function show(el) { el.classList.remove('hidden'); if(el.classList.contains('rec-lens-container')) el.classList.add('visible'); }
+
+    // --- Logic: Calculation ---
+    function calculate() {
+        // 1. Sensor
+        let sw, sh;
+        if (sensorSelect.value === 'custom') {
+            sw = parseFloat(inputSensorW.value) || 0;
+            sh = parseFloat(inputSensorH.value) || 0;
+            customGroup.classList.add('active');
+        } else {
+            sw = sensors[sensorSelect.value].w;
+            sh = sensors[sensorSelect.value].h;
+            customGroup.classList.remove('active');
+        }
+
+        // 2. Inputs
+        const f = parseFloat(inputFocal.value) || 0;
+        const d = parseFloat(inputDist.value) || 0;
+        const tw = parseFloat(inputTargetW.value) || 0;
+
+        let resultMain = 0;
+        let resultHeight = 0;
+        let magnification = 0;
+        let isValid = false;
+
+        // 3. Calc
+        if (sw > 0 && sh > 0) {
+            if (currentMode === 'fov') {
+                if (f > 0 && d > 0) {
+                    resultMain = (sw * d) / f;
+                    resultHeight = (sh * d) / f;
+                    magnification = sw / resultMain;
+                    isValid = true;
+                }
+            } else if (currentMode === 'focal') {
+                if (tw > 0 && d > 0) {
+                    resultMain = (sw * d) / tw; // Focal
+                    resultHeight = tw * (sh / sw);
+                    magnification = sw / tw;
+                    isValid = true;
+                    recommendLens(resultMain); 
+                }
+            } else if (currentMode === 'dist') {
+                if (tw > 0 && f > 0) {
+                    resultMain = (tw * f) / sw;
+                    resultHeight = tw * (sh / sw);
+                    magnification = sw / tw;
+                    isValid = true;
+                }
+            }
+
+            if (isValid) {
+                valMain.textContent = resultMain.toFixed(1);
+                valSub1.textContent = resultHeight.toFixed(1);
+                valMag.textContent = magnification.toFixed(3);
+                updateVisualizer(sw, sh);
+            } else {
+                valMain.textContent = "---";
+                valSub1.textContent = "---";
+                valMag.textContent = "---";
+                valRecLens.textContent = "---";
+            }
+        }
+    }
+
+    // --- Logic: Lens Recommendation ---
+    function recommendLens(calculatedFocal) {
+        let closest = lensCandidates[0];
+        let minDiff = Math.abs(calculatedFocal - closest.v);
+
+        lensCandidates.forEach(cand => {
+            const diff = Math.abs(calculatedFocal - cand.v);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closest = cand;
+            }
+        });
+        valRecLens.textContent = closest.l;
+    }
+
+    // --- Visualizer ---
+    function updateVisualizer(w, h) {
+        const MAX_SIZE = 160; 
+        const ratio = w / h;
+        let boxW, boxH;
+        if (ratio >= 1) { boxW = MAX_SIZE; boxH = MAX_SIZE / ratio; } 
+        else { boxH = MAX_SIZE; boxW = MAX_SIZE * ratio; }
+
+        aspectBox.style.width = `${boxW}px`;
+        aspectBox.style.height = `${boxH}px`;
+        
+        const r = w / h;
+        let t = "";
+        if (Math.abs(r - 1.5) < 0.05) t = "3:2";
+        else if (Math.abs(r - 1.33) < 0.05) t = "4:3";
+        else if (Math.abs(r - 1.77) < 0.05) t = "16:9";
+        else if (Math.abs(r - 1) < 0.05) t = "1:1";
+        aspectLabel.textContent = t;
+    }
+
+    // --- Init ---
+    [sensorSelect, inputSensorW, inputSensorH, inputFocal, inputDist, inputTargetW].forEach(el => el.addEventListener('input', calculate));
+    sensorSelect.addEventListener('change', calculate);
+    langSelect.addEventListener('change', updateLanguage);
+
+    updateLanguage();
+    calculate();
+</script>
+
+</body>
+</html>
