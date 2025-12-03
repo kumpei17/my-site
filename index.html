@@ -146,6 +146,13 @@
             font-size: 10px; color: var(--sub-text); 
             font-family: "SF Mono", "Menlo", monospace;
             text-align: center;
+            margin-bottom: 2px;
+        }
+
+        /* Model Info below Sensor Info */
+        #vis-model-info {
+            font-size: 11px; font-weight: 600; color: var(--text-color);
+            text-align: center;
         }
 
         .badge {
@@ -265,6 +272,7 @@
                 <span id="vis-range-text"></span>
             </div>
             <div id="vis-sensor-info"></div>
+            <div id="vis-model-info"></div>
         </div>
     </div>
 </div>
@@ -326,7 +334,10 @@
     function calculate() {
         // 1. Get Sensor
         let sw, sh;
-        const sType = el('sensor-select').value;
+        const sel = el('sensor-select');
+        const sType = sel.value;
+        const modelName = sel.options[sel.selectedIndex].text; // Get display text
+
         if (sType === 'custom') {
             sw = parseFloat(el('sensor-w').value) || 0;
             sh = parseFloat(el('sensor-h').value) || 0;
@@ -392,21 +403,20 @@
             el('res-aov').innerText = valAov.toFixed(1) + "°";
             
             // Determine Width/Height to display in visualizer
-            // In FOV mode: Use calculated W/H
-            // In Focal/Dist mode: Use TargetW and Calculated H
             let visW = (mode === 'fov') ? valMain : targetMm;
             let visH = valH;
 
-            updateVisualizer(visW, visH, sw, sh);
+            updateVisualizer(visW, visH, sw, sh, modelName);
 
         } else {
             resetResults();
-            // Show Sensor info even if calc is invalid
             if (sw > 0 && sh > 0) {
                 el('vis-sensor-info').innerText = `Sensor: ${sw} x ${sh} mm`;
+                el('vis-model-info').innerText = modelName;
                 updateVisualizerBoxOnly(sw, sh);
             } else {
                 el('vis-sensor-info').innerText = "";
+                el('vis-model-info').innerText = "";
             }
         }
     }
@@ -435,16 +445,18 @@
         box.style.height = finalH + "px";
     }
 
-    function updateVisualizer(w, h, sw, sh) {
+    function updateVisualizer(w, h, sw, sh, modelName) {
         const box = el('vis-box');
         const rangeText = el('vis-range-text');
         const sensorInfo = el('vis-sensor-info');
+        const modelInfo = el('vis-model-info');
         
         updateVisualizerBoxOnly(w, h); // Draw aspect ratio
 
         const t = textData[lang];
         rangeText.innerHTML = `<span id="vis-range-label">${t.vis_label}</span>${w.toFixed(0)} x ${h.toFixed(0)} mm`;
         sensorInfo.innerText = `Sensor: ${sw} x ${sh} mm`;
+        modelInfo.innerText = modelName;
     }
 
     // --- Helpers ---
