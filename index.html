@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Ind. Camera Calc</title>
+    <title>Camera Calculator</title>
     <style>
         /* --- Base Variables --- */
         :root {
@@ -159,11 +159,11 @@
 
 <div class="container">
     <header>
-        <h1>Industrial Calc</h1>
+        <h1>Camera Calculator</h1>
         <div class="top-controls">
             <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">☀</button>
             <select id="lang-select" class="lang-select" onchange="updateLanguage()">
-                <option value="ja">JP</option>
+                <option value="ja" selected>JP</option>
                 <option value="en">EN</option>
             </select>
         </div>
@@ -316,6 +316,9 @@
         inputs.forEach(id => el(id).addEventListener('input', calculate));
         el('sensor-select').addEventListener('change', () => { checkCustomSensor(); calculate(); });
         checkCustomSensor();
+        
+        // Force update to Japanese on load
+        updateLanguage();
         calculate();
     }
 
