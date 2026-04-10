@@ -35,11 +35,45 @@ input,select{width:100%;padding:12px 14px;font-size:16px;font-family:inherit;col
 input:focus,select:focus{outline:none;border-color:var(--accent);}
 input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 .suffix{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--sub);pointer-events:none;}
-.fnum-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;background:var(--inp);border-radius:var(--r);box-shadow:var(--shadow);padding:10px 14px;}
-.fnum-row input[type="range"]{width:100%;height:4px;padding:0;margin:0;background:none;border:none;box-shadow:none;accent-color:var(--accent);cursor:pointer;}
-.fnum-prefix{font-size:13px;font-weight:700;color:var(--sub);white-space:nowrap;line-height:1;}
-.fnum-input{width:52px;padding:4px 6px;font-size:15px;font-weight:700;color:var(--accent);background:var(--ctrl);border:none;border-radius:6px;box-shadow:none;text-align:center;}
-.fnum-input:focus{outline:none;}
+
+/* ===== F値ウィジェット ===== */
+.fnum-widget{
+    background:var(--inp);border-radius:12px;box-shadow:var(--shadow);
+    padding:16px 14px 12px;
+}
+.fnum-display{
+    text-align:center;margin-bottom:12px;line-height:1;
+}
+.fnum-prefix-lg{
+    font-size:16px;font-weight:700;color:var(--sub);vertical-align:middle;margin-right:2px;
+}
+.fnum-big{
+    font-size:48px;font-weight:800;color:var(--accent);letter-spacing:-2px;vertical-align:middle;
+    transition:all 0.15s;
+}
+.fnum-slider-row{
+    display:flex;align-items:center;gap:8px;
+}
+.fnum-label-min{font-size:10px;color:var(--sub);white-space:nowrap;font-weight:600;}
+.fnum-label-max{font-size:10px;color:var(--sub);white-space:nowrap;font-weight:600;}
+.fnum-slider-wrap{flex:1;position:relative;}
+.fnum-slider-wrap input[type="range"]{
+    width:100%;height:6px;padding:0;margin:0;
+    background:none;border:none;box-shadow:none;
+    accent-color:var(--accent);cursor:pointer;
+}
+/* tick marks under slider */
+.fnum-ticks{
+    display:flex;justify-content:space-between;
+    padding:0 2px;margin-top:3px;
+}
+.fnum-tick{
+    width:1px;height:4px;background:var(--ctrl);border-radius:1px;
+    transition:background 0.15s;
+}
+.fnum-tick.active{background:var(--accent);opacity:0.5;}
+
+/* ===== 共通results ===== */
 .results-card{background:var(--inp);border-radius:16px;padding:24px;box-shadow:var(--shadow);text-align:center;margin-bottom:20px;}
 .primary-result{margin-bottom:20px;}
 .result-label{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;margin-bottom:4px;}
@@ -159,14 +193,25 @@ input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-in
         <div class="form-section">
             <div><label id="lbl-dof-sensor">センサー機種</label><div class="input-wrapper"><select id="dof-sensor" onchange="calcDof()"></select><span class="suffix">&#9660;</span></div></div>
             <div><label id="lbl-dof-focal">レンズ焦点距離 (mm)</label><div class="input-wrapper"><input type="number" id="dof-focal" placeholder="ex. 50" inputmode="decimal" oninput="calcDof()"><span class="suffix">mm</span></div></div>
+
+            <!-- F値ウィジェット -->
             <div>
                 <label id="lbl-dof-fnum">絞り値 (F値)</label>
-                <div class="fnum-row">
-                    <input type="range" id="dof-fslider" min="0" max="15" step="1" value="8" oninput="onFslider()">
-                    <span class="fnum-prefix">F</span>
-                    <input type="number" id="dof-fnum" class="fnum-input" value="5.6" inputmode="decimal" oninput="onFnumInput()">
+                <div class="fnum-widget">
+                    <div class="fnum-display">
+                        <span class="fnum-prefix-lg">F</span><span class="fnum-big" id="fnum-big">5.6</span>
+                    </div>
+                    <div class="fnum-slider-row">
+                        <span class="fnum-label-min">F1.0</span>
+                        <div class="fnum-slider-wrap">
+                            <input type="range" id="dof-fslider" min="0" max="15" step="1" value="8" oninput="onFslider()">
+                            <div class="fnum-ticks" id="fnum-ticks"></div>
+                        </div>
+                        <span class="fnum-label-max">F22</span>
+                    </div>
                 </div>
             </div>
+
             <div><label id="lbl-dof-dist">撮影距離 (mm)</label><div class="input-wrapper"><input type="number" id="dof-dist" placeholder="ex. 3000" inputmode="decimal" oninput="calcDof()"><span class="suffix">mm</span></div></div>
             <div><label id="lbl-dof-coc">許容錯乱円径（自動）</label><div class="input-wrapper"><input type="text" id="dof-coc-display" readonly tabindex="-1" style="color:var(--sub);background:var(--ctrl);cursor:default;"><span class="suffix">mm</span></div></div>
         </div>
@@ -180,7 +225,7 @@ input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-in
 </div>
 
 <script>
-const sensors = {
+const sensors={
     'acs1':{w:28.16,h:19.71,px:22},'go4k':{w:20.74,h:9.79,px:4.5},
     'go5m':{w:23.04,h:18.14,px:9},'go12':{w:22.18,h:19.71,px:22},
     'hx7s':{w:28.16,h:21.12,px:11},'q2m':{w:19.20,h:10.80,px:10},
@@ -188,7 +233,7 @@ const sensors = {
     'full':{w:36,h:24,px:8.4},'aps-c':{w:23.5,h:15.6,px:3.9},
     'm43':{w:17.3,h:13,px:3.3},'1inch':{w:13.2,h:8.8,px:2.4}
 };
-const sensorOptions = [
+const sensorOptions=[
     {group:'Industrial Models',items:[
         {v:'acs1',t:'ACS-1 (1280x896 / 22μm)'},{v:'go4k',t:'GO-4K (4608x2176 / 4.5μm)'},
         {v:'go5m',t:'GO-5M (2560x2016 / 9μm)'},{v:'go12',t:'GO-12 (1008x896 / 22μm)'},
@@ -224,29 +269,48 @@ const el=id=>document.getElementById(id);
 
 function buildSensorSelects(){
     ['fov-sensor','focal-sensor','dist-sensor','dof-sensor'].forEach(sid=>{
-        const sel=el(sid); sel.innerHTML='';
+        const sel=el(sid);sel.innerHTML='';
         sensorOptions.forEach(g=>{
-            const og=document.createElement('optgroup'); og.label=g.group;
-            g.items.forEach(it=>{ const o=document.createElement('option'); o.value=it.v; o.text=it.t; og.appendChild(o); });
+            const og=document.createElement('optgroup');og.label=g.group;
+            g.items.forEach(it=>{const o=document.createElement('option');o.value=it.v;o.text=it.t;og.appendChild(o);});
             sel.appendChild(og);
         });
     });
 }
+
+function buildTicks(){
+    const wrap=el('fnum-ticks');
+    wrap.innerHTML='';
+    fStops.forEach((_,i)=>{
+        const d=document.createElement('div');
+        d.className='fnum-tick';
+        d.id='tick-'+i;
+        wrap.appendChild(d);
+    });
+}
+
+function updateTicks(idx){
+    fStops.forEach((_,i)=>{
+        const t=el('tick-'+i);
+        if(t) t.classList.toggle('active', i<=idx);
+    });
+}
+
 function switchTab(tab){
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    el('tab-'+tab).classList.add('active'); el('panel-'+tab).classList.add('active');
+    el('tab-'+tab).classList.add('active');el('panel-'+tab).classList.add('active');
 }
 function getSensor(selId){
-    const v=el(selId).value; const s=sensors[v];
-    return {sw:s?s.w:0,sh:s?s.h:0,name:el(selId).options[el(selId).selectedIndex].text};
+    const v=el(selId).value;const s=sensors[v];
+    return{sw:s?s.w:0,sh:s?s.h:0,name:el(selId).options[el(selId).selectedIndex].text};
 }
 function updateVisBox(boxId,textId,sensorId,modelId,w,h,sw,sh,modelName,label,valid){
-    const MAX_W=280,MAX_H=140; const src=valid?{w,h}:{w:sw,h:sh};
+    const MAX_W=280,MAX_H=140;const src=valid?{w,h}:{w:sw,h:sh};
     if(src.w<=0||src.h<=0)return;
-    const ratio=src.w/src.h; let fw,fh;
+    const ratio=src.w/src.h;let fw,fh;
     if(MAX_W/MAX_H>ratio){fh=MAX_H;fw=MAX_H*ratio;}else{fw=MAX_W;fh=MAX_W/ratio;}
-    el(boxId).style.width=fw+'px'; el(boxId).style.height=fh+'px';
+    el(boxId).style.width=fw+'px';el(boxId).style.height=fh+'px';
     el(textId).innerHTML=valid?'<span class="vis-range-label">'+label+'</span>'+w.toFixed(0)+' x '+h.toFixed(0)+' mm':'';
     el(sensorId).innerText=sw>0?'Sensor: '+sw+' x '+sh+' mm':'';
     el(modelId).innerText=modelName;
@@ -260,10 +324,10 @@ function fmtVal(v){
 }
 
 function calcFov(){
-    const {sw,sh,name}=getSensor('fov-sensor');
+    const{sw,sh,name}=getSensor('fov-sensor');
     const focal=parseFloat(el('fov-focal').value)||0;
     const dist=parseFloat(el('fov-dist').value)||0;
-    const t=T[lang]; let valid=false,vW=0,vH=0,vMag=0,vAov=0;
+    const t=T[lang];let valid=false,vW=0,vH=0,vMag=0,vAov=0;
     if(sw>0&&focal>0&&dist>0){vW=(sw*dist)/focal;vH=(sh*dist)/focal;vMag=sw/vW;vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI);valid=true;}
     else if(sw>0&&focal>0){vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI);}
     el('fov-res-main').innerText=valid?vW.toFixed(1):'---';
@@ -273,17 +337,17 @@ function calcFov(){
     updateVisBox('fov-vis-box','fov-vis-text','fov-vis-sensor','fov-vis-model',vW,vH,sw,sh,name,t.vis_label,valid);
 }
 function calcFocal(){
-    const {sw,sh,name}=getSensor('focal-sensor');
+    const{sw,sh,name}=getSensor('focal-sensor');
     const target=parseFloat(el('focal-target').value)||0;
     const dist=parseFloat(el('focal-dist').value)||0;
-    const t=T[lang]; let valid=false,vF=0,vH=0,vMag=0,vAov=0;
+    const t=T[lang];let valid=false,vF=0,vH=0,vMag=0,vAov=0;
     if(sw>0&&target>0&&dist>0){
         vF=(sw*dist)/target;vH=target*(sh/sw);vMag=sw/target;
         vAov=2*Math.atan(sw/(2*vF))*(180/Math.PI);valid=true;
         const lenses=[16,25,35,50,75,85,100,135,200];
         const c=lenses.reduce((p,v)=>Math.abs(v-vF)<Math.abs(p-vF)?v:p);
-        el('focal-rec-val').innerText=c+'mm'; el('focal-rec-badge').style.display='block';
-    } else { el('focal-rec-badge').style.display='none'; }
+        el('focal-rec-val').innerText=c+'mm';el('focal-rec-badge').style.display='block';
+    }else{el('focal-rec-badge').style.display='none';}
     el('focal-res-main').innerText=valid?vF.toFixed(1):'---';
     el('focal-res-h').innerText=valid?vH.toFixed(1):'---';
     el('focal-res-aov').innerText=vAov>0?vAov.toFixed(1)+'°':'---°';
@@ -291,10 +355,10 @@ function calcFocal(){
     updateVisBox('focal-vis-box','focal-vis-text','focal-vis-sensor','focal-vis-model',target,vH,sw,sh,name,t.vis_label,valid);
 }
 function calcDist(){
-    const {sw,sh,name}=getSensor('dist-sensor');
+    const{sw,sh,name}=getSensor('dist-sensor');
     const focal=parseFloat(el('dist-focal').value)||0;
     const target=parseFloat(el('dist-target').value)||0;
-    const t=T[lang]; let valid=false,vD=0,vH=0,vMag=0,vAov=0;
+    const t=T[lang];let valid=false,vD=0,vH=0,vMag=0,vAov=0;
     if(sw>0&&focal>0&&target>0){vD=(target*focal)/sw;vH=target*(sh/sw);vMag=sw/target;vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI);valid=true;}
     else if(sw>0&&focal>0){vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI);}
     el('dist-res-main').innerText=valid?vD.toFixed(1):'---';
@@ -303,54 +367,77 @@ function calcDist(){
     el('dist-res-mag').innerText=valid?fmtMag(vMag):'---';
     updateVisBox('dist-vis-box','dist-vis-text','dist-vis-sensor','dist-vis-model',target,vH,sw,sh,name,t.vis_label,valid);
 }
-function onFslider(){el('dof-fnum').value=fStops[parseInt(el('dof-fslider').value)];calcDof();}
-function onFnumInput(){
-    const v=parseFloat(el('dof-fnum').value);
-    if(!isNaN(v)){let best=0,minD=Infinity;fStops.forEach((f,i)=>{const d=Math.abs(f-v);if(d<minD){minD=d;best=i;}});el('dof-fslider').value=best;}
+
+function onFslider(){
+    const idx=parseInt(el('dof-fslider').value);
+    const f=fStops[idx];
+    el('fnum-big').innerText=f%1===0?f.toFixed(0):f;
+    updateTicks(idx);
     calcDof();
 }
+
 function calcDof(){
-    const sKey=el('dof-sensor').value; const s=sensors[sKey];
+    const sKey=el('dof-sensor').value;const s=sensors[sKey];
     const px=s?s.px:null;
     const coc=px?px*0.001:null;
     el('dof-coc-display').value=coc?coc.toFixed(4):'---';
     const focal=parseFloat(el('dof-focal').value)||0;
-    const fnum=parseFloat(el('dof-fnum').value)||0;
+    const fnum=parseFloat(el('dof-fnum-hidden').value)||fStops[parseInt(el('dof-fslider').value)];
     const d=parseFloat(el('dof-dist').value)||0;
     if(!coc||focal<=0||fnum<=0||d<=0){el('dof-res-total').innerText='---';el('dof-unit').innerText='mm';return;}
     const Fc=fnum*coc;
     const nearDof=(d*d*Fc)/(focal*focal+Fc*d);
     const denomFar=focal*focal-Fc*d;
     let total;
-    if(denomFar<=0){total=Infinity;}
-    else{total=nearDof+(d*d*Fc)/denomFar;}
-    const {val,unit}=fmtVal(total);
+    if(denomFar<=0){total=Infinity;}else{total=nearDof+(d*d*Fc)/denomFar;}
+    const{val,unit}=fmtVal(total);
     el('dof-res-total').innerText=val;
     el('dof-unit').innerText=unit;
 }
+
 function updateLanguage(){
-    lang=el('lang-select').value; const t=T[lang];
-    el('tab-fov').innerText=t.tab_fov; el('tab-focal').innerText=t.tab_focal;
-    el('tab-dist').innerText=t.tab_dist; el('tab-dof').innerText=t.tab_dof;
-    el('lbl-fov-sensor').innerText=t.lbl_sensor; el('lbl-fov-focal').innerText=t.lbl_focal_len; el('lbl-fov-dist').innerText=t.lbl_dist;
-    el('lbl-focal-sensor').innerText=t.lbl_sensor; el('lbl-focal-target').innerText=t.lbl_target; el('lbl-focal-dist').innerText=t.lbl_dist;
-    el('lbl-dist-sensor').innerText=t.lbl_sensor; el('lbl-dist-focal').innerText=t.lbl_focal_len; el('lbl-dist-target').innerText=t.lbl_target;
-    el('lbl-dof-sensor').innerText=t.lbl_sensor; el('lbl-dof-focal').innerText=t.lbl_focal_len;
-    el('lbl-dof-fnum').innerText=t.lbl_fnum; el('lbl-dof-dist').innerText=t.lbl_shoot_dist;
-    el('lbl-dof-coc').innerText=t.lbl_coc; el('dof-res-label').innerText=t.res_dof;
-    el('fov-res-label').innerText=t.res_fov; el('focal-res-label').innerText=t.res_focal; el('dist-res-label').innerText=t.res_dist;
-    calcFov(); calcFocal(); calcDist(); calcDof();
+    lang=el('lang-select').value;const t=T[lang];
+    el('tab-fov').innerText=t.tab_fov;el('tab-focal').innerText=t.tab_focal;
+    el('tab-dist').innerText=t.tab_dist;el('tab-dof').innerText=t.tab_dof;
+    el('lbl-fov-sensor').innerText=t.lbl_sensor;el('lbl-fov-focal').innerText=t.lbl_focal_len;el('lbl-fov-dist').innerText=t.lbl_dist;
+    el('lbl-focal-sensor').innerText=t.lbl_sensor;el('lbl-focal-target').innerText=t.lbl_target;el('lbl-focal-dist').innerText=t.lbl_dist;
+    el('lbl-dist-sensor').innerText=t.lbl_sensor;el('lbl-dist-focal').innerText=t.lbl_focal_len;el('lbl-dist-target').innerText=t.lbl_target;
+    el('lbl-dof-sensor').innerText=t.lbl_sensor;el('lbl-dof-focal').innerText=t.lbl_focal_len;
+    el('lbl-dof-fnum').innerText=t.lbl_fnum;el('lbl-dof-dist').innerText=t.lbl_shoot_dist;
+    el('lbl-dof-coc').innerText=t.lbl_coc;el('dof-res-label').innerText=t.res_dof;
+    el('fov-res-label').innerText=t.res_fov;el('focal-res-label').innerText=t.res_focal;el('dist-res-label').innerText=t.res_dist;
+    calcFov();calcFocal();calcDist();calcDof();
 }
 function toggleTheme(){
     const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
     document.documentElement.setAttribute('data-theme',next);
     el('theme-btn').innerText=next==='dark'?'🌙':'☀';
 }
+
 function init(){
     buildSensorSelects();
-    el('dof-fslider').value=8; el('dof-fnum').value=fStops[8];
+    buildTicks();
+    // hidden input for fnum value used in calcDof
+    const h=document.createElement('input');
+    h.type='hidden';h.id='dof-fnum-hidden';h.value=fStops[8];
+    document.body.appendChild(h);
+    el('dof-fslider').value=8;
+    el('fnum-big').innerText=fStops[8];
+    updateTicks(8);
     updateLanguage();
 }
+
+// onFslider も hidden に書く
+const _orig=onFslider;
+window.onFslider=function(){
+    const idx=parseInt(el('dof-fslider').value);
+    const f=fStops[idx];
+    el('fnum-big').innerText=f%1===0?f.toFixed(0):f;
+    const h=el('dof-fnum-hidden');if(h)h.value=f;
+    updateTicks(idx);
+    calcDof();
+};
+
 init();
 </script>
 </body>
