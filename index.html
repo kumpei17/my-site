@@ -1,174 +1,123 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Camera Calculator</title>
-    <style>
-        /* --- Base Variables --- */
-        :root {
-            --bg-color: #FAFAFA;
-            --text-color: #333333;
-            --sub-text: #8E8E93;
-            --accent-color: #0055AA;
-            --input-bg: #FFFFFF;
-            --control-bg: #EEEEEF;
-            --border-radius: 8px;
-            --shadow: 0 2px 10px rgba(0,0,0,0.05);
-            --vis-border: #0055AA;
-            --vis-bg: rgba(0, 85, 170, 0.08);
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<style>
+:root {
+    --bg: #FAFAFA; --text: #333; --sub: #8E8E93; --accent: #0055AA;
+    --inp: #FFF; --ctrl: #EEEEEF; --r: 8px;
+    --shadow: 0 2px 10px rgba(0,0,0,0.05);
+    --vis-border: #0055AA; --vis-bg: rgba(0,85,170,0.08);
+}
+[data-theme="dark"] {
+    --bg: #121212; --text: #F0F0F0; --sub: #AAAAAA; --accent: #409CFF;
+    --inp: #1C1C1E; --ctrl: #2C2C2E;
+    --vis-border: #409CFF; --vis-bg: rgba(64,156,255,0.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+    background:var(--bg);color:var(--text);line-height:1.5;
+    display:flex;justify-content:center;min-height:100vh;
+    padding:20px;transition:background 0.3s,color 0.3s;
+}
+.container{width:100%;max-width:500px;margin:0 auto;padding-bottom:40px;}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:0 4px;}
+h1{font-weight:700;font-size:20px;letter-spacing:-0.5px;}
+.top-controls{display:flex;gap:12px;align-items:center;}
+.icon-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text);}
+.lang-select{background:var(--ctrl);border:none;border-radius:6px;padding:4px 8px;font-size:12px;color:var(--text);font-weight:600;appearance:none;}
 
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --text-color: #F0F0F0;
-            --sub-text: #AAAAAA;
-            --accent-color: #409CFF;
-            --input-bg: #1C1C1E;
-            --control-bg: #2C2C2E;
-            --vis-border: #409CFF;
-            --vis-bg: rgba(64, 156, 255, 0.1);
-        }
+.tab-bar{display:flex;background:var(--ctrl);padding:4px;border-radius:10px;margin-bottom:24px;gap:2px;}
+.tab-btn{
+    flex:1;text-align:center;padding:7px 2px;font-size:11px;font-weight:600;
+    color:var(--sub);cursor:pointer;border-radius:7px;transition:all 0.2s;white-space:nowrap;
+}
+.tab-btn.active{background:var(--inp);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.5;
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 20px;
-            transition: background-color 0.3s, color 0.3s;
-        }
+.form-section{display:flex;flex-direction:column;gap:16px;margin-bottom:24px;}
+label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--sub);margin-bottom:6px;letter-spacing:0.5px;}
+.input-wrapper{position:relative;}
+input,select{
+    width:100%;padding:12px 14px;font-size:16px;font-family:inherit;
+    color:var(--text);background:var(--inp);
+    border:1px solid transparent;border-radius:var(--r);
+    box-shadow:var(--shadow);transition:all 0.2s;appearance:none;
+}
+input:focus,select:focus{outline:none;border-color:var(--accent);}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+.suffix{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--sub);pointer-events:none;}
 
-        .container { width: 100%; max-width: 500px; margin: 0 auto; padding-bottom: 40px; }
+.fnum-row{
+    display:grid;
+    grid-template-columns:1fr auto auto;
+    align-items:center;
+    gap:10px;
+    background:var(--inp);
+    border-radius:var(--r);
+    box-shadow:var(--shadow);
+    padding:10px 14px;
+}
+.fnum-row input[type="range"]{
+    width:100%;height:4px;padding:0;margin:0;
+    background:none;border:none;box-shadow:none;
+    accent-color:var(--accent);cursor:pointer;
+}
+.fnum-prefix{
+    font-size:13px;font-weight:700;color:var(--sub);
+    white-space:nowrap;line-height:1;
+}
+.fnum-input{
+    width:52px;padding:4px 6px;font-size:15px;font-weight:700;
+    color:var(--accent);background:var(--ctrl);
+    border:none;border-radius:6px;box-shadow:none;
+    text-align:center;
+}
+.fnum-input:focus{outline:none;border-color:var(--accent);}
 
-        /* --- Header --- */
-        header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 20px; padding: 0 4px;
-        }
-        h1 { font-weight: 700; font-size: 20px; letter-spacing: -0.5px; }
-        .top-controls { display: flex; gap: 12px; align-items: center; }
-        .icon-btn { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-color); }
-        .lang-select {
-            background: var(--control-bg); border: none; border-radius: 6px;
-            padding: 4px 8px; font-size: 12px; color: var(--text-color); font-weight: 600;
-        }
+.results-card{background:var(--inp);border-radius:16px;padding:24px;box-shadow:var(--shadow);text-align:center;margin-bottom:20px;}
+.primary-result{margin-bottom:20px;}
+.result-label{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;margin-bottom:4px;}
+.result-value{font-size:42px;font-weight:800;color:var(--accent);letter-spacing:-1px;line-height:1;}
+.result-unit{font-size:18px;font-weight:500;color:var(--sub);margin-left:2px;}
+.grid-results{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px;}
+.grid-item{background:var(--ctrl);border-radius:8px;padding:8px 4px;}
+.grid-item .val{font-size:15px;font-weight:600;color:var(--text);}
+.grid-item .lbl{font-size:9px;color:var(--sub);text-transform:uppercase;margin-top:2px;}
+.badge{display:inline-flex;align-items:center;padding:4px 12px;background:var(--accent);color:#FFF;border-radius:20px;font-size:12px;font-weight:600;margin-top:8px;}
 
-        /* --- Mode Switcher --- */
-        .segmented-control {
-            display: flex; background-color: var(--control-bg); padding: 4px;
-            border-radius: 10px; margin-bottom: 24px;
-        }
-        .segment-btn {
-            flex: 1; text-align: center; padding: 8px 0; font-size: 13px; font-weight: 600;
-            color: var(--sub-text); cursor: pointer; border-radius: 8px; transition: all 0.2s;
-        }
-        .segment-btn.active { background-color: var(--input-bg); color: var(--text-color); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.vis-container{width:100%;padding-top:16px;display:flex;flex-direction:column;align-items:center;}
+.vis-box{border:2px solid var(--vis-border);background:var(--vis-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.4s cubic-bezier(0.2,0.8,0.2,1);margin-bottom:8px;min-width:50px;min-height:30px;}
+.vis-range-text{font-size:14px;color:var(--accent);font-weight:700;text-align:center;line-height:1.2;padding:4px;}
+.vis-range-label{font-size:9px;opacity:0.8;font-weight:400;display:block;}
+.vis-sensor-info{font-size:10px;color:var(--sub);font-family:"SF Mono","Menlo",monospace;text-align:center;margin-bottom:2px;}
+.vis-model-info{font-size:11px;font-weight:600;color:var(--text);text-align:center;}
 
-        /* --- Forms --- */
-        .form-section { display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px; }
-        .form-group { position: relative; }
-        .form-group.hidden { display: none; }
-        
-        label {
-            display: block; font-size: 11px; font-weight: 700; text-transform: uppercase;
-            color: var(--sub-text); margin-bottom: 6px; letter-spacing: 0.5px;
-        }
+.dof-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px;}
+.dof-grid-item{background:var(--ctrl);border-radius:8px;padding:10px 8px;text-align:center;}
+.dof-grid-item .val{font-size:15px;font-weight:600;color:var(--text);}
+.dof-grid-item .lbl{font-size:9px;color:var(--sub);text-transform:uppercase;margin-top:2px;}
+.coc-note{font-size:11px;color:var(--sub);text-align:center;margin-top:12px;font-family:"SF Mono","Menlo",monospace;}
 
-        .input-wrapper { position: relative; }
-        
-        input, select {
-            width: 100%; padding: 12px 14px; font-size: 16px; font-family: inherit;
-            color: var(--text-color); background-color: var(--input-bg);
-            border: 1px solid transparent; border-radius: var(--border-radius);
-            box-shadow: var(--shadow); transition: all 0.2s; appearance: none;
-        }
-        input:focus, select:focus { outline: none; border-color: var(--accent-color); }
-        input[type="number"]::-webkit-outer-spin-button,
-        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-        .suffix {
-            position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
-            font-size: 13px; color: var(--sub-text); pointer-events: none;
-        }
-
-        /* --- Results --- */
-        .results-card {
-            background: var(--input-bg); border-radius: 16px; padding: 24px;
-            box-shadow: var(--shadow); text-align: center; margin-bottom: 20px;
-        }
-
-        .primary-result { margin-bottom: 24px; }
-        .result-label { font-size: 11px; font-weight: 700; color: var(--sub-text); text-transform: uppercase; margin-bottom: 4px; }
-        .result-value { font-size: 42px; font-weight: 800; color: var(--accent-color); letter-spacing: -1px; line-height: 1; }
-        .result-unit { font-size: 18px; font-weight: 500; color: var(--sub-text); margin-left: 2px; }
-
-        .grid-results { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
-        .grid-item { background: var(--control-bg); border-radius: 8px; padding: 8px 4px; }
-        .grid-item .val { font-size: 15px; font-weight: 600; color: var(--text-color); }
-        .grid-item .lbl { font-size: 9px; color: var(--sub-text); text-transform: uppercase; margin-top: 2px; }
-
-        /* --- Visualizer --- */
-        .visualizer-container {
-            width: 100%; 
-            padding-top: 16px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-        }
-        
-        /* The Box representing the Frame */
-        #vis-box {
-            border: 2px solid var(--vis-border);
-            background: var(--vis-bg);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: relative;
-            margin-bottom: 8px;
-            min-width: 50px; min-height: 30px; /* safety */
-        }
-        
-        /* Text inside the box (Shooting Range) */
-        #vis-range-text {
-            font-size: 14px; color: var(--accent-color); font-weight: 700;
-            text-align: center; line-height: 1.2;
-            padding: 4px;
-        }
-        #vis-range-label {
-            font-size: 9px; opacity: 0.8; font-weight: 400; display: block;
-        }
-
-        /* Text below the box (Sensor Info) */
-        #vis-sensor-info {
-            font-size: 10px; color: var(--sub-text); 
-            font-family: "SF Mono", "Menlo", monospace;
-            text-align: center;
-            margin-bottom: 2px;
-        }
-
-        /* Model Info below Sensor Info */
-        #vis-model-info {
-            font-size: 11px; font-weight: 600; color: var(--text-color);
-            text-align: center;
-        }
-
-        .badge {
-            display: inline-flex; align-items: center; padding: 4px 12px;
-            background: var(--accent-color); color: #FFF; border-radius: 20px;
-            font-size: 12px; font-weight: 600; margin-top: 8px;
-        }
-    </style>
+.dof-vis{margin-top:20px;padding-top:16px;border-top:1px solid var(--ctrl);}
+.dof-bar-wrap{position:relative;height:48px;margin:8px 0 4px;}
+.dof-bar-bg{position:absolute;top:50%;transform:translateY(-50%);width:100%;height:4px;background:var(--ctrl);border-radius:2px;}
+.dof-bar-fill{position:absolute;top:50%;transform:translateY(-50%);height:8px;border-radius:4px;background:var(--accent);opacity:0.7;transition:left 0.3s,width 0.3s;}
+.dof-bar-focus{position:absolute;top:50%;transform:translate(-50%,-50%);width:3px;height:28px;background:var(--accent);border-radius:2px;}
+.dof-bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--sub);font-family:"SF Mono","Menlo",monospace;}
+.dof-bar-center-label{font-size:10px;color:var(--accent);font-weight:700;text-align:center;margin-top:2px;}
+</style>
 </head>
 <body>
-
 <div class="container">
     <header>
         <h1>Camera Calculator</h1>
         <div class="top-controls">
-            <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">☀</button>
+            <button class="icon-btn" onclick="toggleTheme()" id="theme-btn">&#9728;</button>
             <select id="lang-select" class="lang-select" onchange="updateLanguage()">
                 <option value="ja" selected>JP</option>
                 <option value="en">EN</option>
@@ -176,353 +125,378 @@
         </div>
     </header>
 
-    <div class="segmented-control">
-        <div class="segment-btn active" onclick="setMode('fov')" data-i18n="mode_fov">撮影範囲</div>
-        <div class="segment-btn" onclick="setMode('focal')" data-i18n="mode_focal">焦点距離</div>
-        <div class="segment-btn" onclick="setMode('dist')" data-i18n="mode_dist">被写体距離</div>
+    <div class="tab-bar">
+        <div class="tab-btn active" id="tab-fov" onclick="switchTab('fov')">撮影範囲</div>
+        <div class="tab-btn" id="tab-focal" onclick="switchTab('focal')">焦点距離</div>
+        <div class="tab-btn" id="tab-dist" onclick="switchTab('dist')">必要距離</div>
+        <div class="tab-btn" id="tab-dof" onclick="switchTab('dof')">被写界深度</div>
     </div>
 
-    <div class="form-section">
-        
-        <div class="form-group">
-            <label data-i18n="lbl_sensor">SENSOR MODEL</label>
-            <div class="input-wrapper">
-                <select id="sensor-select" onchange="checkCustomSensor()">
-                    <optgroup label="Industrial Models">
-                        <option value="acs1">ACS-1 (1280x896 / 22μm)</option>
-                        <option value="go4k">GO-4K (4608x2176 / 4.5μm)</option>
-                        <option value="go5m">GO-5M (2560x2016 / 9μm)</option>
-                        <option value="go12">GO-12 (1008x896 / 22μm)</option>
-                        <option value="hx7s">HX-7s (2560x1920 / 11μm)</option>
-                        <option value="q2m">Q2m/M-Cam (1920x1080 / 10μm)</option>
-                        <option value="q1v">Q1v (640x480 / 11μm)</option>
-                        <option value="ucam">u-cam (640x480 / 7.4μm)</option>
-                    </optgroup>
-                    <optgroup label="General Formats">
-                        <option value="full">Full Frame (35mm)</option>
-                        <option value="aps-c">APS-C (Sony/Nikon)</option>
-                        <option value="m43">Micro 4/3</option>
-                        <option value="1inch">1 inch</option>
-                    </optgroup>
-                    <option value="custom">Custom (W x H mm)</option>
-                </select>
-                <span class="suffix">▼</span>
+    <!-- TAB: 撮影範囲 -->
+    <div class="tab-panel active" id="panel-fov">
+        <div class="form-section">
+            <div><label id="lbl-fov-sensor">センサー機種</label><div class="input-wrapper"><select id="fov-sensor" onchange="calcFov()"></select><span class="suffix">&#9660;</span></div></div>
+            <div><label id="lbl-fov-focal">レンズ焦点距離 (mm)</label><div class="input-wrapper"><input type="number" id="fov-focal" placeholder="ex. 50" inputmode="decimal" oninput="calcFov()"><span class="suffix">mm</span></div></div>
+            <div><label id="lbl-fov-dist">WD / 撮影距離 (mm)</label><div class="input-wrapper"><input type="number" id="fov-dist" placeholder="ex. 3000" inputmode="decimal" oninput="calcFov()"><span class="suffix">mm</span></div></div>
+        </div>
+        <div class="results-card">
+            <div class="primary-result">
+                <div class="result-label" id="fov-res-label">撮影範囲 (幅)</div>
+                <div><span class="result-value" id="fov-res-main">---</span><span class="result-unit">mm</span></div>
             </div>
-            <div id="custom-sensor-inputs" style="display:none; gap:10px; margin-top:8px;">
-                <input type="number" id="sensor-w" placeholder="Width (mm)">
-                <input type="number" id="sensor-h" placeholder="Height (mm)">
+            <div class="grid-results">
+                <div class="grid-item"><div class="val" id="fov-res-h">---</div><div class="lbl">HEIGHT (mm)</div></div>
+                <div class="grid-item"><div class="val" id="fov-res-aov">---°</div><div class="lbl">ANGLE (H)</div></div>
+                <div class="grid-item"><div class="val" id="fov-res-mag">---</div><div class="lbl">MAG (x)</div></div>
+            </div>
+            <div class="vis-container">
+                <div class="vis-box" id="fov-vis-box"><span class="vis-range-text" id="fov-vis-text"></span></div>
+                <div class="vis-sensor-info" id="fov-vis-sensor"></div>
+                <div class="vis-model-info" id="fov-vis-model"></div>
             </div>
         </div>
-
-        <div class="form-group" id="grp-focal">
-            <label data-i18n="lbl_focal">FOCAL LENGTH (mm)</label>
-            <div class="input-wrapper">
-                <input type="number" id="focal-length" placeholder="ex. 50" inputmode="decimal">
-                <span class="suffix">mm</span>
-            </div>
-        </div>
-
-        <div class="form-group" id="grp-dist">
-            <label data-i18n="lbl_dist">DISTANCE (mm)</label>
-            <div class="input-wrapper">
-                <input type="number" id="distance" placeholder="ex. 3000" inputmode="decimal">
-                <span class="suffix">mm</span>
-            </div>
-        </div>
-
-        <div class="form-group hidden" id="grp-target">
-            <label data-i18n="lbl_target">TARGET WIDTH (mm)</label>
-            <div class="input-wrapper">
-                <input type="number" id="target-width" placeholder="ex. 2000" inputmode="decimal">
-                <span class="suffix">mm</span>
-            </div>
-        </div>
-
     </div>
 
-    <div class="results-card">
-        <div class="primary-result">
-            <div class="result-label" id="main-res-label">SHOOTING WIDTH</div>
+    <!-- TAB: 焦点距離 -->
+    <div class="tab-panel" id="panel-focal">
+        <div class="form-section">
+            <div><label id="lbl-focal-sensor">センサー機種</label><div class="input-wrapper"><select id="focal-sensor" onchange="calcFocal()"></select><span class="suffix">&#9660;</span></div></div>
+            <div><label id="lbl-focal-target">撮りたい幅 (mm)</label><div class="input-wrapper"><input type="number" id="focal-target" placeholder="ex. 2000" inputmode="decimal" oninput="calcFocal()"><span class="suffix">mm</span></div></div>
+            <div><label id="lbl-focal-dist">WD / 撮影距離 (mm)</label><div class="input-wrapper"><input type="number" id="focal-dist" placeholder="ex. 3000" inputmode="decimal" oninput="calcFocal()"><span class="suffix">mm</span></div></div>
+        </div>
+        <div class="results-card">
+            <div class="primary-result">
+                <div class="result-label" id="focal-res-label">必要な焦点距離</div>
+                <div><span class="result-value" id="focal-res-main">---</span><span class="result-unit">mm</span></div>
+                <div id="focal-rec-badge" style="display:none;"><span class="badge">Rec: <span id="focal-rec-val">50mm</span></span></div>
+            </div>
+            <div class="grid-results">
+                <div class="grid-item"><div class="val" id="focal-res-h">---</div><div class="lbl">HEIGHT (mm)</div></div>
+                <div class="grid-item"><div class="val" id="focal-res-aov">---°</div><div class="lbl">ANGLE (H)</div></div>
+                <div class="grid-item"><div class="val" id="focal-res-mag">---</div><div class="lbl">MAG (x)</div></div>
+            </div>
+            <div class="vis-container">
+                <div class="vis-box" id="focal-vis-box"><span class="vis-range-text" id="focal-vis-text"></span></div>
+                <div class="vis-sensor-info" id="focal-vis-sensor"></div>
+                <div class="vis-model-info" id="focal-vis-model"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: 必要距離 -->
+    <div class="tab-panel" id="panel-dist">
+        <div class="form-section">
+            <div><label id="lbl-dist-sensor">センサー機種</label><div class="input-wrapper"><select id="dist-sensor" onchange="calcDist()"></select><span class="suffix">&#9660;</span></div></div>
+            <div><label id="lbl-dist-focal">レンズ焦点距離 (mm)</label><div class="input-wrapper"><input type="number" id="dist-focal" placeholder="ex. 50" inputmode="decimal" oninput="calcDist()"><span class="suffix">mm</span></div></div>
+            <div><label id="lbl-dist-target">撮りたい幅 (mm)</label><div class="input-wrapper"><input type="number" id="dist-target" placeholder="ex. 2000" inputmode="decimal" oninput="calcDist()"><span class="suffix">mm</span></div></div>
+        </div>
+        <div class="results-card">
+            <div class="primary-result">
+                <div class="result-label" id="dist-res-label">必要な距離</div>
+                <div><span class="result-value" id="dist-res-main">---</span><span class="result-unit">mm</span></div>
+            </div>
+            <div class="grid-results">
+                <div class="grid-item"><div class="val" id="dist-res-h">---</div><div class="lbl">HEIGHT (mm)</div></div>
+                <div class="grid-item"><div class="val" id="dist-res-aov">---°</div><div class="lbl">ANGLE (H)</div></div>
+                <div class="grid-item"><div class="val" id="dist-res-mag">---</div><div class="lbl">MAG (x)</div></div>
+            </div>
+            <div class="vis-container">
+                <div class="vis-box" id="dist-vis-box"><span class="vis-range-text" id="dist-vis-text"></span></div>
+                <div class="vis-sensor-info" id="dist-vis-sensor"></div>
+                <div class="vis-model-info" id="dist-vis-model"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB: 被写界深度 -->
+    <div class="tab-panel" id="panel-dof">
+        <div class="form-section">
+            <div><label id="lbl-dof-sensor">センサー機種</label><div class="input-wrapper"><select id="dof-sensor" onchange="calcDof()"></select><span class="suffix">&#9660;</span></div></div>
+            <div><label id="lbl-dof-focal">レンズ焦点距離 (mm)</label><div class="input-wrapper"><input type="number" id="dof-focal" placeholder="ex. 50" inputmode="decimal" oninput="calcDof()"><span class="suffix">mm</span></div></div>
             <div>
-                <span class="result-value" id="res-main">---</span>
-                <span class="result-unit">mm</span>
+                <label id="lbl-dof-fnum">絞り値 (F値)</label>
+                <div class="fnum-row">
+                    <input type="range" id="dof-fslider" min="0" max="15" step="1" value="8" oninput="onFslider()">
+                    <span class="fnum-prefix">F</span>
+                    <input type="number" id="dof-fnum" class="fnum-input" value="5.6" inputmode="decimal" oninput="onFnumInput()">
+                </div>
             </div>
-            <div id="rec-badge" style="display:none;">
-                <span class="badge">Rec: <span id="rec-lens-val">50mm</span></span>
-            </div>
+            <div><label id="lbl-dof-dist">撮影距離 (mm)</label><div class="input-wrapper"><input type="number" id="dof-dist" placeholder="ex. 3000" inputmode="decimal" oninput="calcDof()"><span class="suffix">mm</span></div></div>
         </div>
-
-        <div class="grid-results">
-            <div class="grid-item">
-                <div class="val" id="res-height">---</div>
-                <div class="lbl">HEIGHT (mm)</div>
+        <div class="results-card">
+            <div class="primary-result">
+                <div class="result-label" id="dof-res-label">被写界深度 (合計幅)</div>
+                <div><span class="result-value" id="dof-res-total">---</span><span class="result-unit" id="dof-unit">mm</span></div>
             </div>
-            <div class="grid-item">
-                <div class="val" id="res-aov">---°</div>
-                <div class="lbl">ANGLE (H)</div>
+            <div class="dof-grid">
+                <div class="dof-grid-item"><div class="val" id="dof-res-near">---</div><div class="lbl" id="lbl-dof-near">前ボケ限界 (mm)</div></div>
+                <div class="dof-grid-item"><div class="val" id="dof-res-far">---</div><div class="lbl" id="lbl-dof-far">後ボケ限界 (mm)</div></div>
             </div>
-            <div class="grid-item">
-                <div class="val" id="res-mag">---</div>
-                <div class="lbl">MAG (x)</div>
+            <div class="dof-vis">
+                <div class="dof-bar-wrap">
+                    <div class="dof-bar-bg"></div>
+                    <div class="dof-bar-fill" id="dof-bar-fill" style="left:50%;width:0%;"></div>
+                    <div class="dof-bar-focus" id="dof-bar-focus" style="left:50%;"></div>
+                </div>
+                <div class="dof-bar-labels">
+                    <span id="dof-bar-near-lbl">---</span>
+                    <span id="dof-bar-far-lbl">---</span>
+                </div>
+                <div class="dof-bar-center-label" id="dof-bar-focus-lbl"></div>
             </div>
-        </div>
-
-        <div class="visualizer-container">
-            <div id="vis-box">
-                <span id="vis-range-text"></span>
-            </div>
-            <div id="vis-sensor-info"></div>
-            <div id="vis-model-info"></div>
+            <div class="coc-note" id="dof-coc-note"></div>
         </div>
     </div>
 </div>
 
 <script>
-    // --- Data Definitions (Final Version) ---
-    const sensors = {
-        // Industrial Models (Provided Specs)
-        'acs1':  { w: 28.16, h: 19.71 }, // Moved to top
-        'go4k':  { w: 20.74, h: 9.79 },
-        'go5m':  { w: 23.04, h: 18.14 },
-        'go12':  { w: 22.18, h: 19.71 },
-        'hx7s':  { w: 28.16, h: 21.12 },
-        'q2m':   { w: 19.20, h: 10.80 },
-        'q1v':   { w: 7.17, h: 5.38 },
-        'ucam':  { w: 4.74, h: 3.55 },
-        
-        // General Formats
-        'full': { w: 36, h: 24 },
-        'aps-c': { w: 23.5, h: 15.6 },
-        'm43': { w: 17.3, h: 13 },
-        '1inch': { w: 13.2, h: 8.8 }
-    };
-    
-    const textData = {
-        ja: {
-            mode_fov: "撮影範囲", mode_focal: "焦点距離", mode_dist: "必要距離",
-            lbl_sensor: "センサー機種", lbl_focal: "レンズ焦点距離 (mm)", lbl_dist: "WD / 被写体距離 (mm)", lbl_target: "撮りたい幅 (mm)",
-            res_width: "撮影範囲 (幅)", res_req_lens: "必要なレンズ", res_req_dist: "必要な距離",
-            vis_label: "撮影範囲"
-        },
-        en: {
-            mode_fov: "FOV", mode_focal: "Focal Len", mode_dist: "Distance",
-            lbl_sensor: "Sensor Model", lbl_focal: "Focal Length (mm)", lbl_dist: "WD / Distance (mm)", lbl_target: "Target Width (mm)",
-            res_width: "Shooting Width", res_req_lens: "Required Lens", res_req_dist: "Required Dist",
-            vis_label: "Range"
-        }
-    };
-
-    let mode = 'fov';
-    let lang = 'ja';
-
-    // --- Dom Elements ---
-    const el = (id) => document.getElementById(id);
-    const inputs = ['sensor-w', 'sensor-h', 'focal-length', 'distance', 'target-width'];
-    
-    // --- Initialization ---
-    function init() {
-        inputs.forEach(id => el(id).addEventListener('input', calculate));
-        el('sensor-select').addEventListener('change', () => { checkCustomSensor(); calculate(); });
-        checkCustomSensor();
-        
-        // Force update to Japanese on load
-        updateLanguage();
-        calculate();
+const sensors = {
+    'acs1':{w:28.16,h:19.71},'go4k':{w:20.74,h:9.79},'go5m':{w:23.04,h:18.14},
+    'go12':{w:22.18,h:19.71},'hx7s':{w:28.16,h:21.12},'q2m':{w:19.20,h:10.80},
+    'q1v':{w:7.17,h:5.38},'ucam':{w:4.74,h:3.55},
+    'full':{w:36,h:24},'aps-c':{w:23.5,h:15.6},'m43':{w:17.3,h:13},'1inch':{w:13.2,h:8.8}
+};
+const sensorOptions = [
+    {group:'Industrial Models',items:[
+        {v:'acs1',t:'ACS-1 (1280x896 / 22μm)'},{v:'go4k',t:'GO-4K (4608x2176 / 4.5μm)'},
+        {v:'go5m',t:'GO-5M (2560x2016 / 9μm)'},{v:'go12',t:'GO-12 (1008x896 / 22μm)'},
+        {v:'hx7s',t:'HX-7s (2560x1920 / 11μm)'},{v:'q2m',t:'Q2m/M-Cam (1920x1080 / 10μm)'},
+        {v:'q1v',t:'Q1v (640x480 / 11μm)'},{v:'ucam',t:'u-cam (640x480 / 7.4μm)'}
+    ]},
+    {group:'General Formats',items:[
+        {v:'full',t:'Full Frame (35mm)'},{v:'aps-c',t:'APS-C (Sony/Nikon)'},
+        {v:'m43',t:'Micro 4/3'},{v:'1inch',t:'1 inch'}
+    ]}
+];
+const fStops = [1.0,1.2,1.4,1.8,2.0,2.8,3.5,4.0,5.6,6.3,7.1,8.0,11,13,16,22];
+const T = {
+    ja:{
+        tab_fov:'撮影範囲',tab_focal:'焦点距離',tab_dist:'必要距離',tab_dof:'被写界深度',
+        lbl_sensor:'センサー機種',lbl_focal_len:'レンズ焦点距離 (mm)',
+        lbl_dist:'WD / 撮影距離 (mm)',lbl_target:'撮りたい幅 (mm)',
+        lbl_fnum:'絞り値 (F値)',lbl_shoot_dist:'撮影距離 (mm)',
+        res_fov:'撮影範囲 (幅)',res_focal:'必要な焦点距離',res_dist:'必要な距離',
+        res_dof:'被写界深度 (合計幅)',
+        dof_near:'前ボケ限界 (mm)',dof_far:'後ボケ限界 (mm)',
+        vis_label:'撮影範囲',inf:'∞'
+    },
+    en:{
+        tab_fov:'FOV',tab_focal:'Focal Len',tab_dist:'Distance',tab_dof:'DoF',
+        lbl_sensor:'Sensor Model',lbl_focal_len:'Focal Length (mm)',
+        lbl_dist:'WD / Shoot Dist (mm)',lbl_target:'Target Width (mm)',
+        lbl_fnum:'F Number (Aperture)',lbl_shoot_dist:'Shooting Distance (mm)',
+        res_fov:'Shooting Width',res_focal:'Required Focal Len',res_dist:'Required Distance',
+        res_dof:'Depth of Field (Total)',
+        dof_near:'Near Limit (mm)',dof_far:'Far Limit (mm)',
+        vis_label:'Range',inf:'∞'
     }
+};
+let lang = 'ja';
+const el = id => document.getElementById(id);
 
-    // --- Core Logic ---
-    function calculate() {
-        // 1. Get Sensor
-        let sw, sh;
-        const sel = el('sensor-select');
-        const sType = sel.value;
-        const modelName = sel.options[sel.selectedIndex].text; // Get display text
-
-        if (sType === 'custom') {
-            sw = parseFloat(el('sensor-w').value) || 0;
-            sh = parseFloat(el('sensor-h').value) || 0;
-        } else {
-            sw = sensors[sType].w;
-            sh = sensors[sType].h;
-        }
-
-        // 2. Get Inputs (All in mm)
-        const focal = parseFloat(el('focal-length').value) || 0;
-        const distMm = parseFloat(el('distance').value) || 0;
-        const targetMm = parseFloat(el('target-width').value) || 0;
-
-        // 3. Calculation
-        let valMain = 0;
-        let valH = 0;
-        let valMag = 0;
-        let valAov = 0;
-        let valid = false;
-
-        // Common AOV Calc
-        if (sw > 0 && focal > 0) {
-            valAov = 2 * Math.atan(sw / (2 * focal)) * (180 / Math.PI);
-        }
-
-        if (mode === 'fov') {
-            if (sw > 0 && focal > 0 && distMm > 0) {
-                valMain = (sw * distMm) / focal;
-                valH = (sh * distMm) / focal;
-                valMag = sw / valMain;
-                valid = true;
-            }
-        } else if (mode === 'focal') {
-            if (sw > 0 && targetMm > 0 && distMm > 0) {
-                valMain = (sw * distMm) / targetMm;
-                valH = targetMm * (sh/sw);
-                valMag = sw / targetMm;
-                valid = true;
-                recommendLens(valMain);
-                valAov = 2 * Math.atan(sw / (2 * valMain)) * (180 / Math.PI);
-            }
-        } else if (mode === 'dist') {
-            if (sw > 0 && targetMm > 0 && focal > 0) {
-                valMain = (targetMm * focal) / sw;
-                valH = targetMm * (sh/sw);
-                valMag = sw / targetMm;
-                valid = true;
-            }
-        }
-
-        // 4. Update UI
-        if (valid) {
-            el('res-main').innerText = valMain.toFixed(1);
-            el('res-height').innerText = valH.toFixed(1);
-            
-            // Format Magnification
-            if (valMag > 1) {
-                el('res-mag').innerText = valMag.toFixed(3) + "x";
-            } else {
-                el('res-mag').innerText = "1/" + Math.round(1/valMag);
-            }
-            
-            el('res-aov').innerText = valAov.toFixed(1) + "°";
-            
-            // Determine Width/Height to display in visualizer
-            let visW = (mode === 'fov') ? valMain : targetMm;
-            let visH = valH;
-
-            updateVisualizer(visW, visH, sw, sh, modelName);
-
-        } else {
-            resetResults();
-            if (sw > 0 && sh > 0) {
-                el('vis-sensor-info').innerText = `Sensor: ${sw} x ${sh} mm`;
-                el('vis-model-info').innerText = modelName;
-                updateVisualizerBoxOnly(sw, sh);
-            } else {
-                el('vis-sensor-info').innerText = "";
-                el('vis-model-info').innerText = "";
-            }
-        }
-    }
-    
-    function resetResults() {
-        el('res-main').innerText = "---";
-        el('res-height').innerText = "---";
-        el('res-mag').innerText = "---";
-        el('res-aov').innerText = "---°";
-        el('vis-range-text').innerHTML = "";
-    }
-
-    // --- Visualizer Logic ---
-    
-    function updateVisualizerBoxOnly(sw, sh) {
-        const box = el('vis-box');
-        const MAX_W = 280; const MAX_H = 140;
-        const ratio = sw / sh;
-        let finalW, finalH;
-        if (MAX_W / MAX_H > ratio) {
-            finalH = MAX_H; finalW = MAX_H * ratio;
-        } else {
-            finalW = MAX_W; finalH = MAX_W / ratio;
-        }
-        box.style.width = finalW + "px";
-        box.style.height = finalH + "px";
-    }
-
-    function updateVisualizer(w, h, sw, sh, modelName) {
-        const box = el('vis-box');
-        const rangeText = el('vis-range-text');
-        const sensorInfo = el('vis-sensor-info');
-        const modelInfo = el('vis-model-info');
-        
-        updateVisualizerBoxOnly(w, h); // Draw aspect ratio
-
-        const t = textData[lang];
-        rangeText.innerHTML = `<span id="vis-range-label">${t.vis_label}</span>${w.toFixed(0)} x ${h.toFixed(0)} mm`;
-        sensorInfo.innerText = `Sensor: ${sw} x ${sh} mm`;
-        modelInfo.innerText = modelName;
-    }
-
-    // --- Helpers ---
-    function setMode(m) {
-        mode = m;
-        document.querySelectorAll('.segment-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector(`.segment-btn[onclick="setMode('${m}')"]`).classList.add('active');
-        
-        const grpF = el('grp-focal');
-        const grpD = el('grp-dist');
-        const grpT = el('grp-target');
-        const rec = el('rec-badge');
-        const lbl = el('main-res-label');
-        const t = textData[lang];
-
-        grpF.classList.remove('hidden');
-        grpD.classList.remove('hidden');
-        grpT.classList.add('hidden');
-        rec.style.display = 'none';
-
-        if (m === 'fov') {
-            lbl.innerText = t.res_width;
-        } else if (m === 'focal') {
-            lbl.innerText = t.res_req_lens;
-            grpF.classList.add('hidden');
-            grpT.classList.remove('hidden');
-            rec.style.display = 'block';
-        } else if (m === 'dist') {
-            lbl.innerText = t.res_req_dist;
-            grpD.classList.add('hidden');
-            grpT.classList.remove('hidden');
-        }
-        calculate();
-    }
-
-    function checkCustomSensor() {
-        const val = el('sensor-select').value;
-        el('custom-sensor-inputs').style.display = (val === 'custom') ? 'flex' : 'none';
-        calculate();
-    }
-
-    function recommendLens(f) {
-        const lenses = [16, 25, 35, 50, 75, 85, 100, 135, 200];
-        const closest = lenses.reduce((prev, curr) => Math.abs(curr - f) < Math.abs(prev - f) ? curr : prev);
-        el('rec-lens-val').innerText = closest + "mm";
-    }
-
-    function updateLanguage() {
-        lang = el('lang-select').value;
-        const t = textData[lang];
-        document.querySelectorAll('[data-i18n]').forEach(e => {
-            const key = e.getAttribute('data-i18n');
-            if(t[key]) e.innerText = t[key];
+function buildSensorSelects() {
+    ['fov-sensor','focal-sensor','dist-sensor','dof-sensor'].forEach(sid => {
+        const sel = el(sid);
+        sel.innerHTML = '';
+        sensorOptions.forEach(g => {
+            const og = document.createElement('optgroup');
+            og.label = g.group;
+            g.items.forEach(it => {
+                const o = document.createElement('option');
+                o.value = it.v; o.text = it.t;
+                og.appendChild(o);
+            });
+            sel.appendChild(og);
         });
-        setMode(mode); 
+    });
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    el('tab-'+tab).classList.add('active');
+    el('panel-'+tab).classList.add('active');
+}
+
+function getSensor(selId) {
+    const v = el(selId).value;
+    const s = sensors[v];
+    const name = el(selId).options[el(selId).selectedIndex].text;
+    return {sw: s?s.w:0, sh: s?s.h:0, name};
+}
+
+function updateVisBox(boxId, textId, sensorId, modelId, w, h, sw, sh, modelName, label, valid) {
+    const MAX_W=280, MAX_H=140;
+    const src = valid ? {w,h} : {w:sw,h:sh};
+    if (src.w<=0||src.h<=0) return;
+    const ratio = src.w/src.h;
+    let fw, fh;
+    if (MAX_W/MAX_H > ratio) { fh=MAX_H; fw=MAX_H*ratio; }
+    else { fw=MAX_W; fh=MAX_W/ratio; }
+    const box = el(boxId);
+    box.style.width = fw+'px';
+    box.style.height = fh+'px';
+    el(textId).innerHTML = valid ? '<span class="vis-range-label">'+label+'</span>'+w.toFixed(0)+' x '+h.toFixed(0)+' mm' : '';
+    el(sensorId).innerText = sw>0 ? 'Sensor: '+sw+' x '+sh+' mm' : '';
+    el(modelId).innerText = modelName;
+}
+
+function fmtMag(mag) { return mag>1 ? mag.toFixed(3)+'x' : '1/'+Math.round(1/mag); }
+function fmtMm(v) {
+    if (v===Infinity) return T[lang].inf;
+    if (v>=1000) return (v/1000).toFixed(2)+' m';
+    return v.toFixed(1)+' mm';
+}
+
+function calcFov() {
+    const {sw,sh,name} = getSensor('fov-sensor');
+    const focal = parseFloat(el('fov-focal').value)||0;
+    const dist = parseFloat(el('fov-dist').value)||0;
+    const t = T[lang];
+    let valid=false, vW=0, vH=0, vMag=0, vAov=0;
+    if (sw>0&&focal>0&&dist>0) {
+        vW=(sw*dist)/focal; vH=(sh*dist)/focal; vMag=sw/vW;
+        vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI); valid=true;
+    } else if (sw>0&&focal>0) { vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI); }
+    el('fov-res-main').innerText = valid?vW.toFixed(1):'---';
+    el('fov-res-h').innerText = valid?vH.toFixed(1):'---';
+    el('fov-res-aov').innerText = vAov>0?vAov.toFixed(1)+'°':'---°';
+    el('fov-res-mag').innerText = valid?fmtMag(vMag):'---';
+    updateVisBox('fov-vis-box','fov-vis-text','fov-vis-sensor','fov-vis-model',vW,vH,sw,sh,name,t.vis_label,valid);
+}
+
+function calcFocal() {
+    const {sw,sh,name} = getSensor('focal-sensor');
+    const target = parseFloat(el('focal-target').value)||0;
+    const dist = parseFloat(el('focal-dist').value)||0;
+    const t = T[lang];
+    let valid=false, vF=0, vH=0, vMag=0, vAov=0;
+    if (sw>0&&target>0&&dist>0) {
+        vF=(sw*dist)/target; vH=target*(sh/sw); vMag=sw/target;
+        vAov=2*Math.atan(sw/(2*vF))*(180/Math.PI); valid=true;
+        const lenses=[16,25,35,50,75,85,100,135,200];
+        const c=lenses.reduce((p,v)=>Math.abs(v-vF)<Math.abs(p-vF)?v:p);
+        el('focal-rec-val').innerText=c+'mm';
+        el('focal-rec-badge').style.display='block';
+    } else { el('focal-rec-badge').style.display='none'; }
+    el('focal-res-main').innerText = valid?vF.toFixed(1):'---';
+    el('focal-res-h').innerText = valid?vH.toFixed(1):'---';
+    el('focal-res-aov').innerText = vAov>0?vAov.toFixed(1)+'°':'---°';
+    el('focal-res-mag').innerText = valid?fmtMag(vMag):'---';
+    updateVisBox('focal-vis-box','focal-vis-text','focal-vis-sensor','focal-vis-model',target,vH,sw,sh,name,t.vis_label,valid);
+}
+
+function calcDist() {
+    const {sw,sh,name} = getSensor('dist-sensor');
+    const focal = parseFloat(el('dist-focal').value)||0;
+    const target = parseFloat(el('dist-target').value)||0;
+    const t = T[lang];
+    let valid=false, vD=0, vH=0, vMag=0, vAov=0;
+    if (sw>0&&focal>0&&target>0) {
+        vD=(target*focal)/sw; vH=target*(sh/sw); vMag=sw/target;
+        vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI); valid=true;
+    } else if (sw>0&&focal>0) { vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI); }
+    el('dist-res-main').innerText = valid?vD.toFixed(1):'---';
+    el('dist-res-h').innerText = valid?vH.toFixed(1):'---';
+    el('dist-res-aov').innerText = vAov>0?vAov.toFixed(1)+'°':'---°';
+    el('dist-res-mag').innerText = valid?fmtMag(vMag):'---';
+    updateVisBox('dist-vis-box','dist-vis-text','dist-vis-sensor','dist-vis-model',target,vH,sw,sh,name,t.vis_label,valid);
+}
+
+function onFslider() {
+    el('dof-fnum').value = fStops[parseInt(el('dof-fslider').value)];
+    calcDof();
+}
+function onFnumInput() {
+    const v = parseFloat(el('dof-fnum').value);
+    if (!isNaN(v)) {
+        let best=0, minD=Infinity;
+        fStops.forEach((f,i)=>{ const d=Math.abs(f-v); if(d<minD){minD=d;best=i;} });
+        el('dof-fslider').value = best;
     }
+    calcDof();
+}
 
-    function toggleTheme() {
-        const cur = document.documentElement.getAttribute('data-theme');
-        const next = cur === 'dark' ? 'light' : 'dark';
-        document.documentElement.setAttribute('data-theme', next);
-        el('theme-btn').innerText = next === 'dark' ? '🌙' : '☀';
+function calcDof() {
+    const {sw,sh} = getSensor('dof-sensor');
+    const diag = Math.sqrt(sw*sw+sh*sh);
+    const focal = parseFloat(el('dof-focal').value)||0;
+    const fnum = parseFloat(el('dof-fnum').value)||0;
+    const dist = parseFloat(el('dof-dist').value)||0;
+    const t = T[lang];
+    const reset = () => {
+        el('dof-res-total').innerText='---'; el('dof-unit').innerText='mm';
+        el('dof-res-near').innerText='---'; el('dof-res-far').innerText='---';
+        el('dof-coc-note').innerText='';
+        el('dof-bar-fill').style.cssText='left:50%;width:0%;';
+        el('dof-bar-focus').style.left='50%';
+        el('dof-bar-near-lbl').innerText='---'; el('dof-bar-far-lbl').innerText='---';
+        el('dof-bar-focus-lbl').innerText='';
+    };
+    if (sw<=0||focal<=0||fnum<=0||dist<=0) { reset(); return; }
+    const coc = diag/1442;
+    const H = (focal*focal)/(fnum*coc)+focal;
+    const near = (dist*(H-focal))/(H+dist-2*focal);
+    let far, dofTotal, farInf=false;
+    if (dist>=H) { far=Infinity; farInf=true; dofTotal=Infinity; }
+    else { far=(dist*(H-focal))/(H-dist); dofTotal=far-near; }
+
+    if (farInf) { el('dof-res-total').innerText='∞'; el('dof-unit').innerText=''; }
+    else {
+        const useM=dofTotal>=1000;
+        el('dof-unit').innerText=useM?'m':'mm';
+        el('dof-res-total').innerText=useM?(dofTotal/1000).toFixed(2):dofTotal.toFixed(1);
     }
+    el('dof-res-near').innerText=fmtMm(near);
+    el('dof-res-far').innerText=farInf?t.inf:fmtMm(far);
+    el('dof-coc-note').innerText='CoC: '+coc.toFixed(4)+' mm  (diag: '+diag.toFixed(2)+' mm)';
 
-    init();
+    const bf=el('dof-bar-fill'), bfocus=el('dof-bar-focus');
+    if (!farInf&&near>0&&far>0) {
+        const minR=near*0.5, maxR=far*1.5, span=maxR-minR;
+        const nP=((near-minR)/span)*100, fP=((far-minR)/span)*100, dP=((dist-minR)/span)*100;
+        bf.style.left=Math.max(0,nP).toFixed(1)+'%';
+        bf.style.width=Math.min(100,fP-nP).toFixed(1)+'%';
+        bfocus.style.left=Math.min(100,Math.max(0,dP)).toFixed(1)+'%';
+        el('dof-bar-near-lbl').innerText=fmtMm(near);
+        el('dof-bar-far-lbl').innerText=fmtMm(far);
+    } else {
+        bf.style.left='0%'; bf.style.width='100%'; bfocus.style.left='30%';
+        el('dof-bar-near-lbl').innerText=fmtMm(near);
+        el('dof-bar-far-lbl').innerText=t.inf;
+    }
+    el('dof-bar-focus-lbl').innerText='▲ '+fmtMm(dist);
+}
 
+function updateLanguage() {
+    lang = el('lang-select').value;
+    const t = T[lang];
+    el('tab-fov').innerText=t.tab_fov; el('tab-focal').innerText=t.tab_focal;
+    el('tab-dist').innerText=t.tab_dist; el('tab-dof').innerText=t.tab_dof;
+    el('lbl-fov-sensor').innerText=t.lbl_sensor; el('lbl-fov-focal').innerText=t.lbl_focal_len; el('lbl-fov-dist').innerText=t.lbl_dist;
+    el('lbl-focal-sensor').innerText=t.lbl_sensor; el('lbl-focal-target').innerText=t.lbl_target; el('lbl-focal-dist').innerText=t.lbl_dist;
+    el('lbl-dist-sensor').innerText=t.lbl_sensor; el('lbl-dist-focal').innerText=t.lbl_focal_len; el('lbl-dist-target').innerText=t.lbl_target;
+    el('lbl-dof-sensor').innerText=t.lbl_sensor; el('lbl-dof-focal').innerText=t.lbl_focal_len;
+    el('lbl-dof-fnum').innerText=t.lbl_fnum; el('lbl-dof-dist').innerText=t.lbl_shoot_dist;
+    el('fov-res-label').innerText=t.res_fov; el('focal-res-label').innerText=t.res_focal;
+    el('dist-res-label').innerText=t.res_dist; el('dof-res-label').innerText=t.res_dof;
+    el('lbl-dof-near').innerText=t.dof_near; el('lbl-dof-far').innerText=t.dof_far;
+    calcFov(); calcFocal(); calcDist(); calcDof();
+}
+
+function toggleTheme() {
+    const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    el('theme-btn').innerText = next==='dark'?'🌙':'☀';
+}
+
+function init() {
+    buildSensorSelects();
+    el('dof-fslider').value=8;
+    el('dof-fnum').value=fStops[8];
+    updateLanguage();
+}
+init();
 </script>
 </body>
 </html>
