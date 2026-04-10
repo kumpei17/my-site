@@ -16,69 +16,30 @@
     --vis-border: #409CFF; --vis-bg: rgba(64,156,255,0.1);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{
-    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
-    background:var(--bg);color:var(--text);line-height:1.5;
-    display:flex;justify-content:center;min-height:100vh;
-    padding:20px;transition:background 0.3s,color 0.3s;
-}
+body{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;background:var(--bg);color:var(--text);line-height:1.5;display:flex;justify-content:center;min-height:100vh;padding:20px;transition:background 0.3s,color 0.3s;}
 .container{width:100%;max-width:500px;margin:0 auto;padding-bottom:40px;}
 header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding:0 4px;}
 h1{font-weight:700;font-size:20px;letter-spacing:-0.5px;}
 .top-controls{display:flex;gap:12px;align-items:center;}
 .icon-btn{background:none;border:none;font-size:20px;cursor:pointer;color:var(--text);}
 .lang-select{background:var(--ctrl);border:none;border-radius:6px;padding:4px 8px;font-size:12px;color:var(--text);font-weight:600;appearance:none;}
-
 .tab-bar{display:flex;background:var(--ctrl);padding:4px;border-radius:10px;margin-bottom:24px;gap:2px;}
-.tab-btn{
-    flex:1;text-align:center;padding:7px 2px;font-size:11px;font-weight:600;
-    color:var(--sub);cursor:pointer;border-radius:7px;transition:all 0.2s;white-space:nowrap;
-}
+.tab-btn{flex:1;text-align:center;padding:7px 2px;font-size:11px;font-weight:600;color:var(--sub);cursor:pointer;border-radius:7px;transition:all 0.2s;white-space:nowrap;}
 .tab-btn.active{background:var(--inp);color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,0.1);}
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
-
 .form-section{display:flex;flex-direction:column;gap:16px;margin-bottom:24px;}
 label{display:block;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--sub);margin-bottom:6px;letter-spacing:0.5px;}
 .input-wrapper{position:relative;}
-input,select{
-    width:100%;padding:12px 14px;font-size:16px;font-family:inherit;
-    color:var(--text);background:var(--inp);
-    border:1px solid transparent;border-radius:var(--r);
-    box-shadow:var(--shadow);transition:all 0.2s;appearance:none;
-}
+input,select{width:100%;padding:12px 14px;font-size:16px;font-family:inherit;color:var(--text);background:var(--inp);border:1px solid transparent;border-radius:var(--r);box-shadow:var(--shadow);transition:all 0.2s;appearance:none;}
 input:focus,select:focus{outline:none;border-color:var(--accent);}
-input[type="number"]::-webkit-outer-spin-button,
-input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+input[type="number"]::-webkit-outer-spin-button,input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
 .suffix{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--sub);pointer-events:none;}
-
-.fnum-row{
-    display:grid;
-    grid-template-columns:1fr auto auto;
-    align-items:center;
-    gap:10px;
-    background:var(--inp);
-    border-radius:var(--r);
-    box-shadow:var(--shadow);
-    padding:10px 14px;
-}
-.fnum-row input[type="range"]{
-    width:100%;height:4px;padding:0;margin:0;
-    background:none;border:none;box-shadow:none;
-    accent-color:var(--accent);cursor:pointer;
-}
-.fnum-prefix{
-    font-size:13px;font-weight:700;color:var(--sub);
-    white-space:nowrap;line-height:1;
-}
-.fnum-input{
-    width:52px;padding:4px 6px;font-size:15px;font-weight:700;
-    color:var(--accent);background:var(--ctrl);
-    border:none;border-radius:6px;box-shadow:none;
-    text-align:center;
-}
-.fnum-input:focus{outline:none;border-color:var(--accent);}
-
+.fnum-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:10px;background:var(--inp);border-radius:var(--r);box-shadow:var(--shadow);padding:10px 14px;}
+.fnum-row input[type="range"]{width:100%;height:4px;padding:0;margin:0;background:none;border:none;box-shadow:none;accent-color:var(--accent);cursor:pointer;}
+.fnum-prefix{font-size:13px;font-weight:700;color:var(--sub);white-space:nowrap;line-height:1;}
+.fnum-input{width:52px;padding:4px 6px;font-size:15px;font-weight:700;color:var(--accent);background:var(--ctrl);border:none;border-radius:6px;box-shadow:none;text-align:center;}
+.fnum-input:focus{outline:none;}
 .results-card{background:var(--inp);border-radius:16px;padding:24px;box-shadow:var(--shadow);text-align:center;margin-bottom:20px;}
 .primary-result{margin-bottom:20px;}
 .result-label{font-size:11px;font-weight:700;color:var(--sub);text-transform:uppercase;margin-bottom:4px;}
@@ -89,27 +50,12 @@ input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0
 .grid-item .val{font-size:15px;font-weight:600;color:var(--text);}
 .grid-item .lbl{font-size:9px;color:var(--sub);text-transform:uppercase;margin-top:2px;}
 .badge{display:inline-flex;align-items:center;padding:4px 12px;background:var(--accent);color:#FFF;border-radius:20px;font-size:12px;font-weight:600;margin-top:8px;}
-
 .vis-container{width:100%;padding-top:16px;display:flex;flex-direction:column;align-items:center;}
 .vis-box{border:2px solid var(--vis-border);background:var(--vis-bg);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all 0.4s cubic-bezier(0.2,0.8,0.2,1);margin-bottom:8px;min-width:50px;min-height:30px;}
 .vis-range-text{font-size:14px;color:var(--accent);font-weight:700;text-align:center;line-height:1.2;padding:4px;}
 .vis-range-label{font-size:9px;opacity:0.8;font-weight:400;display:block;}
 .vis-sensor-info{font-size:10px;color:var(--sub);font-family:"SF Mono","Menlo",monospace;text-align:center;margin-bottom:2px;}
 .vis-model-info{font-size:11px;font-weight:600;color:var(--text);text-align:center;}
-
-.dof-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:20px;}
-.dof-grid-item{background:var(--ctrl);border-radius:8px;padding:10px 8px;text-align:center;}
-.dof-grid-item .val{font-size:15px;font-weight:600;color:var(--text);}
-.dof-grid-item .lbl{font-size:9px;color:var(--sub);text-transform:uppercase;margin-top:2px;}
-.coc-note{font-size:11px;color:var(--sub);text-align:center;margin-top:12px;font-family:"SF Mono","Menlo",monospace;}
-
-.dof-vis{margin-top:20px;padding-top:16px;border-top:1px solid var(--ctrl);}
-.dof-bar-wrap{position:relative;height:48px;margin:8px 0 4px;}
-.dof-bar-bg{position:absolute;top:50%;transform:translateY(-50%);width:100%;height:4px;background:var(--ctrl);border-radius:2px;}
-.dof-bar-fill{position:absolute;top:50%;transform:translateY(-50%);height:8px;border-radius:4px;background:var(--accent);opacity:0.7;transition:left 0.3s,width 0.3s;}
-.dof-bar-focus{position:absolute;top:50%;transform:translate(-50%,-50%);width:3px;height:28px;background:var(--accent);border-radius:2px;}
-.dof-bar-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--sub);font-family:"SF Mono","Menlo",monospace;}
-.dof-bar-center-label{font-size:10px;color:var(--accent);font-weight:700;text-align:center;margin-top:2px;}
 </style>
 </head>
 <body>
@@ -222,39 +168,25 @@ input[type="number"]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0
                 </div>
             </div>
             <div><label id="lbl-dof-dist">撮影距離 (mm)</label><div class="input-wrapper"><input type="number" id="dof-dist" placeholder="ex. 3000" inputmode="decimal" oninput="calcDof()"><span class="suffix">mm</span></div></div>
+            <div><label id="lbl-dof-coc">許容錯乱円径（自動）</label><div class="input-wrapper"><input type="text" id="dof-coc-display" readonly tabindex="-1" style="color:var(--sub);background:var(--ctrl);cursor:default;"><span class="suffix">mm</span></div></div>
         </div>
         <div class="results-card">
             <div class="primary-result">
-                <div class="result-label" id="dof-res-label">被写界深度 (合計幅)</div>
+                <div class="result-label" id="dof-res-label">被写界深度</div>
                 <div><span class="result-value" id="dof-res-total">---</span><span class="result-unit" id="dof-unit">mm</span></div>
             </div>
-            <div class="dof-grid">
-                <div class="dof-grid-item"><div class="val" id="dof-res-near">---</div><div class="lbl" id="lbl-dof-near">前ボケ限界 (mm)</div></div>
-                <div class="dof-grid-item"><div class="val" id="dof-res-far">---</div><div class="lbl" id="lbl-dof-far">後ボケ限界 (mm)</div></div>
-            </div>
-            <div class="dof-vis">
-                <div class="dof-bar-wrap">
-                    <div class="dof-bar-bg"></div>
-                    <div class="dof-bar-fill" id="dof-bar-fill" style="left:50%;width:0%;"></div>
-                    <div class="dof-bar-focus" id="dof-bar-focus" style="left:50%;"></div>
-                </div>
-                <div class="dof-bar-labels">
-                    <span id="dof-bar-near-lbl">---</span>
-                    <span id="dof-bar-far-lbl">---</span>
-                </div>
-                <div class="dof-bar-center-label" id="dof-bar-focus-lbl"></div>
-            </div>
-            <div class="coc-note" id="dof-coc-note"></div>
         </div>
     </div>
 </div>
 
 <script>
 const sensors = {
-    'acs1':{w:28.16,h:19.71},'go4k':{w:20.74,h:9.79},'go5m':{w:23.04,h:18.14},
-    'go12':{w:22.18,h:19.71},'hx7s':{w:28.16,h:21.12},'q2m':{w:19.20,h:10.80},
-    'q1v':{w:7.17,h:5.38},'ucam':{w:4.74,h:3.55},
-    'full':{w:36,h:24},'aps-c':{w:23.5,h:15.6},'m43':{w:17.3,h:13},'1inch':{w:13.2,h:8.8}
+    'acs1':{w:28.16,h:19.71,px:22},'go4k':{w:20.74,h:9.79,px:4.5},
+    'go5m':{w:23.04,h:18.14,px:9},'go12':{w:22.18,h:19.71,px:22},
+    'hx7s':{w:28.16,h:21.12,px:11},'q2m':{w:19.20,h:10.80,px:10},
+    'q1v':{w:7.17,h:5.38,px:11},'ucam':{w:4.74,h:3.55,px:7.4},
+    'full':{w:36,h:24,px:8.4},'aps-c':{w:23.5,h:15.6,px:3.9},
+    'm43':{w:17.3,h:13,px:3.3},'1inch':{w:13.2,h:8.8,px:2.4}
 };
 const sensorOptions = [
     {group:'Industrial Models',items:[
@@ -268,209 +200,136 @@ const sensorOptions = [
         {v:'m43',t:'Micro 4/3'},{v:'1inch',t:'1 inch'}
     ]}
 ];
-const fStops = [1.0,1.2,1.4,1.8,2.0,2.8,3.5,4.0,5.6,6.3,7.1,8.0,11,13,16,22];
-const T = {
+const fStops=[1.0,1.2,1.4,1.8,2.0,2.8,3.5,4.0,5.6,6.3,7.1,8.0,11,13,16,22];
+const T={
     ja:{
         tab_fov:'撮影範囲',tab_focal:'焦点距離',tab_dist:'必要距離',tab_dof:'被写界深度',
         lbl_sensor:'センサー機種',lbl_focal_len:'レンズ焦点距離 (mm)',
         lbl_dist:'WD / 撮影距離 (mm)',lbl_target:'撮りたい幅 (mm)',
-        lbl_fnum:'絞り値 (F値)',lbl_shoot_dist:'撮影距離 (mm)',
-        res_fov:'撮影範囲 (幅)',res_focal:'必要な焦点距離',res_dist:'必要な距離',
-        res_dof:'被写界深度 (合計幅)',
-        dof_near:'前ボケ限界 (mm)',dof_far:'後ボケ限界 (mm)',
+        lbl_fnum:'絞り値 (F値)',lbl_shoot_dist:'撮影距離 (mm)',lbl_coc:'許容錯乱円径（自動）',
+        res_fov:'撮影範囲 (幅)',res_focal:'必要な焦点距離',res_dist:'必要な距離',res_dof:'被写界深度',
         vis_label:'撮影範囲',inf:'∞'
     },
     en:{
         tab_fov:'FOV',tab_focal:'Focal Len',tab_dist:'Distance',tab_dof:'DoF',
         lbl_sensor:'Sensor Model',lbl_focal_len:'Focal Length (mm)',
         lbl_dist:'WD / Shoot Dist (mm)',lbl_target:'Target Width (mm)',
-        lbl_fnum:'F Number (Aperture)',lbl_shoot_dist:'Shooting Distance (mm)',
-        res_fov:'Shooting Width',res_focal:'Required Focal Len',res_dist:'Required Distance',
-        res_dof:'Depth of Field (Total)',
-        dof_near:'Near Limit (mm)',dof_far:'Far Limit (mm)',
+        lbl_fnum:'F Number',lbl_shoot_dist:'Shooting Distance (mm)',lbl_coc:'Circle of Confusion (auto)',
+        res_fov:'Shooting Width',res_focal:'Required Focal Len',res_dist:'Required Distance',res_dof:'Depth of Field',
         vis_label:'Range',inf:'∞'
     }
 };
-let lang = 'ja';
-const el = id => document.getElementById(id);
+let lang='ja';
+const el=id=>document.getElementById(id);
 
-function buildSensorSelects() {
-    ['fov-sensor','focal-sensor','dist-sensor','dof-sensor'].forEach(sid => {
-        const sel = el(sid);
-        sel.innerHTML = '';
-        sensorOptions.forEach(g => {
-            const og = document.createElement('optgroup');
-            og.label = g.group;
-            g.items.forEach(it => {
-                const o = document.createElement('option');
-                o.value = it.v; o.text = it.t;
-                og.appendChild(o);
-            });
+function buildSensorSelects(){
+    ['fov-sensor','focal-sensor','dist-sensor','dof-sensor'].forEach(sid=>{
+        const sel=el(sid); sel.innerHTML='';
+        sensorOptions.forEach(g=>{
+            const og=document.createElement('optgroup'); og.label=g.group;
+            g.items.forEach(it=>{ const o=document.createElement('option'); o.value=it.v; o.text=it.t; og.appendChild(o); });
             sel.appendChild(og);
         });
     });
 }
-
-function switchTab(tab) {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    el('tab-'+tab).classList.add('active');
-    el('panel-'+tab).classList.add('active');
+function switchTab(tab){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    el('tab-'+tab).classList.add('active'); el('panel-'+tab).classList.add('active');
+}
+function getSensor(selId){
+    const v=el(selId).value; const s=sensors[v];
+    return {sw:s?s.w:0,sh:s?s.h:0,name:el(selId).options[el(selId).selectedIndex].text};
+}
+function updateVisBox(boxId,textId,sensorId,modelId,w,h,sw,sh,modelName,label,valid){
+    const MAX_W=280,MAX_H=140; const src=valid?{w,h}:{w:sw,h:sh};
+    if(src.w<=0||src.h<=0)return;
+    const ratio=src.w/src.h; let fw,fh;
+    if(MAX_W/MAX_H>ratio){fh=MAX_H;fw=MAX_H*ratio;}else{fw=MAX_W;fh=MAX_W/ratio;}
+    el(boxId).style.width=fw+'px'; el(boxId).style.height=fh+'px';
+    el(textId).innerHTML=valid?'<span class="vis-range-label">'+label+'</span>'+w.toFixed(0)+' x '+h.toFixed(0)+' mm':'';
+    el(sensorId).innerText=sw>0?'Sensor: '+sw+' x '+sh+' mm':'';
+    el(modelId).innerText=modelName;
+}
+function fmtMag(mag){return mag>1?mag.toFixed(3)+'x':'1/'+Math.round(1/mag);}
+function fmtVal(v){
+    if(v===Infinity)return{val:T[lang].inf,unit:''};
+    if(v>=1000000)return{val:(v/1000000).toFixed(2),unit:'km'};
+    if(v>=1000)return{val:(v/1000).toFixed(3),unit:'m'};
+    return{val:v.toFixed(1),unit:'mm'};
 }
 
-function getSensor(selId) {
-    const v = el(selId).value;
-    const s = sensors[v];
-    const name = el(selId).options[el(selId).selectedIndex].text;
-    return {sw: s?s.w:0, sh: s?s.h:0, name};
-}
-
-function updateVisBox(boxId, textId, sensorId, modelId, w, h, sw, sh, modelName, label, valid) {
-    const MAX_W=280, MAX_H=140;
-    const src = valid ? {w,h} : {w:sw,h:sh};
-    if (src.w<=0||src.h<=0) return;
-    const ratio = src.w/src.h;
-    let fw, fh;
-    if (MAX_W/MAX_H > ratio) { fh=MAX_H; fw=MAX_H*ratio; }
-    else { fw=MAX_W; fh=MAX_W/ratio; }
-    const box = el(boxId);
-    box.style.width = fw+'px';
-    box.style.height = fh+'px';
-    el(textId).innerHTML = valid ? '<span class="vis-range-label">'+label+'</span>'+w.toFixed(0)+' x '+h.toFixed(0)+' mm' : '';
-    el(sensorId).innerText = sw>0 ? 'Sensor: '+sw+' x '+sh+' mm' : '';
-    el(modelId).innerText = modelName;
-}
-
-function fmtMag(mag) { return mag>1 ? mag.toFixed(3)+'x' : '1/'+Math.round(1/mag); }
-function fmtMm(v) {
-    if (v===Infinity) return T[lang].inf;
-    if (v>=1000) return (v/1000).toFixed(2)+' m';
-    return v.toFixed(1)+' mm';
-}
-
-function calcFov() {
-    const {sw,sh,name} = getSensor('fov-sensor');
-    const focal = parseFloat(el('fov-focal').value)||0;
-    const dist = parseFloat(el('fov-dist').value)||0;
-    const t = T[lang];
-    let valid=false, vW=0, vH=0, vMag=0, vAov=0;
-    if (sw>0&&focal>0&&dist>0) {
-        vW=(sw*dist)/focal; vH=(sh*dist)/focal; vMag=sw/vW;
-        vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI); valid=true;
-    } else if (sw>0&&focal>0) { vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI); }
-    el('fov-res-main').innerText = valid?vW.toFixed(1):'---';
-    el('fov-res-h').innerText = valid?vH.toFixed(1):'---';
-    el('fov-res-aov').innerText = vAov>0?vAov.toFixed(1)+'°':'---°';
-    el('fov-res-mag').innerText = valid?fmtMag(vMag):'---';
+function calcFov(){
+    const {sw,sh,name}=getSensor('fov-sensor');
+    const focal=parseFloat(el('fov-focal').value)||0;
+    const dist=parseFloat(el('fov-dist').value)||0;
+    const t=T[lang]; let valid=false,vW=0,vH=0,vMag=0,vAov=0;
+    if(sw>0&&focal>0&&dist>0){vW=(sw*dist)/focal;vH=(sh*dist)/focal;vMag=sw/vW;vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI);valid=true;}
+    else if(sw>0&&focal>0){vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI);}
+    el('fov-res-main').innerText=valid?vW.toFixed(1):'---';
+    el('fov-res-h').innerText=valid?vH.toFixed(1):'---';
+    el('fov-res-aov').innerText=vAov>0?vAov.toFixed(1)+'°':'---°';
+    el('fov-res-mag').innerText=valid?fmtMag(vMag):'---';
     updateVisBox('fov-vis-box','fov-vis-text','fov-vis-sensor','fov-vis-model',vW,vH,sw,sh,name,t.vis_label,valid);
 }
-
-function calcFocal() {
-    const {sw,sh,name} = getSensor('focal-sensor');
-    const target = parseFloat(el('focal-target').value)||0;
-    const dist = parseFloat(el('focal-dist').value)||0;
-    const t = T[lang];
-    let valid=false, vF=0, vH=0, vMag=0, vAov=0;
-    if (sw>0&&target>0&&dist>0) {
-        vF=(sw*dist)/target; vH=target*(sh/sw); vMag=sw/target;
-        vAov=2*Math.atan(sw/(2*vF))*(180/Math.PI); valid=true;
+function calcFocal(){
+    const {sw,sh,name}=getSensor('focal-sensor');
+    const target=parseFloat(el('focal-target').value)||0;
+    const dist=parseFloat(el('focal-dist').value)||0;
+    const t=T[lang]; let valid=false,vF=0,vH=0,vMag=0,vAov=0;
+    if(sw>0&&target>0&&dist>0){
+        vF=(sw*dist)/target;vH=target*(sh/sw);vMag=sw/target;
+        vAov=2*Math.atan(sw/(2*vF))*(180/Math.PI);valid=true;
         const lenses=[16,25,35,50,75,85,100,135,200];
         const c=lenses.reduce((p,v)=>Math.abs(v-vF)<Math.abs(p-vF)?v:p);
-        el('focal-rec-val').innerText=c+'mm';
-        el('focal-rec-badge').style.display='block';
+        el('focal-rec-val').innerText=c+'mm'; el('focal-rec-badge').style.display='block';
     } else { el('focal-rec-badge').style.display='none'; }
-    el('focal-res-main').innerText = valid?vF.toFixed(1):'---';
-    el('focal-res-h').innerText = valid?vH.toFixed(1):'---';
-    el('focal-res-aov').innerText = vAov>0?vAov.toFixed(1)+'°':'---°';
-    el('focal-res-mag').innerText = valid?fmtMag(vMag):'---';
+    el('focal-res-main').innerText=valid?vF.toFixed(1):'---';
+    el('focal-res-h').innerText=valid?vH.toFixed(1):'---';
+    el('focal-res-aov').innerText=vAov>0?vAov.toFixed(1)+'°':'---°';
+    el('focal-res-mag').innerText=valid?fmtMag(vMag):'---';
     updateVisBox('focal-vis-box','focal-vis-text','focal-vis-sensor','focal-vis-model',target,vH,sw,sh,name,t.vis_label,valid);
 }
-
-function calcDist() {
-    const {sw,sh,name} = getSensor('dist-sensor');
-    const focal = parseFloat(el('dist-focal').value)||0;
-    const target = parseFloat(el('dist-target').value)||0;
-    const t = T[lang];
-    let valid=false, vD=0, vH=0, vMag=0, vAov=0;
-    if (sw>0&&focal>0&&target>0) {
-        vD=(target*focal)/sw; vH=target*(sh/sw); vMag=sw/target;
-        vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI); valid=true;
-    } else if (sw>0&&focal>0) { vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI); }
-    el('dist-res-main').innerText = valid?vD.toFixed(1):'---';
-    el('dist-res-h').innerText = valid?vH.toFixed(1):'---';
-    el('dist-res-aov').innerText = vAov>0?vAov.toFixed(1)+'°':'---°';
-    el('dist-res-mag').innerText = valid?fmtMag(vMag):'---';
+function calcDist(){
+    const {sw,sh,name}=getSensor('dist-sensor');
+    const focal=parseFloat(el('dist-focal').value)||0;
+    const target=parseFloat(el('dist-target').value)||0;
+    const t=T[lang]; let valid=false,vD=0,vH=0,vMag=0,vAov=0;
+    if(sw>0&&focal>0&&target>0){vD=(target*focal)/sw;vH=target*(sh/sw);vMag=sw/target;vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI);valid=true;}
+    else if(sw>0&&focal>0){vAov=2*Math.atan(sw/(2*focal))*(180/Math.PI);}
+    el('dist-res-main').innerText=valid?vD.toFixed(1):'---';
+    el('dist-res-h').innerText=valid?vH.toFixed(1):'---';
+    el('dist-res-aov').innerText=vAov>0?vAov.toFixed(1)+'°':'---°';
+    el('dist-res-mag').innerText=valid?fmtMag(vMag):'---';
     updateVisBox('dist-vis-box','dist-vis-text','dist-vis-sensor','dist-vis-model',target,vH,sw,sh,name,t.vis_label,valid);
 }
-
-function onFslider() {
-    el('dof-fnum').value = fStops[parseInt(el('dof-fslider').value)];
+function onFslider(){el('dof-fnum').value=fStops[parseInt(el('dof-fslider').value)];calcDof();}
+function onFnumInput(){
+    const v=parseFloat(el('dof-fnum').value);
+    if(!isNaN(v)){let best=0,minD=Infinity;fStops.forEach((f,i)=>{const d=Math.abs(f-v);if(d<minD){minD=d;best=i;}});el('dof-fslider').value=best;}
     calcDof();
 }
-function onFnumInput() {
-    const v = parseFloat(el('dof-fnum').value);
-    if (!isNaN(v)) {
-        let best=0, minD=Infinity;
-        fStops.forEach((f,i)=>{ const d=Math.abs(f-v); if(d<minD){minD=d;best=i;} });
-        el('dof-fslider').value = best;
-    }
-    calcDof();
+function calcDof(){
+    const sKey=el('dof-sensor').value; const s=sensors[sKey];
+    const px=s?s.px:null;
+    const coc=px?px*0.001:null;
+    el('dof-coc-display').value=coc?coc.toFixed(4):'---';
+    const focal=parseFloat(el('dof-focal').value)||0;
+    const fnum=parseFloat(el('dof-fnum').value)||0;
+    const d=parseFloat(el('dof-dist').value)||0;
+    if(!coc||focal<=0||fnum<=0||d<=0){el('dof-res-total').innerText='---';el('dof-unit').innerText='mm';return;}
+    const Fc=fnum*coc;
+    const nearDof=(d*d*Fc)/(focal*focal+Fc*d);
+    const denomFar=focal*focal-Fc*d;
+    let total;
+    if(denomFar<=0){total=Infinity;}
+    else{total=nearDof+(d*d*Fc)/denomFar;}
+    const {val,unit}=fmtVal(total);
+    el('dof-res-total').innerText=val;
+    el('dof-unit').innerText=unit;
 }
-
-function calcDof() {
-    const {sw,sh} = getSensor('dof-sensor');
-    const diag = Math.sqrt(sw*sw+sh*sh);
-    const focal = parseFloat(el('dof-focal').value)||0;
-    const fnum = parseFloat(el('dof-fnum').value)||0;
-    const dist = parseFloat(el('dof-dist').value)||0;
-    const t = T[lang];
-    const reset = () => {
-        el('dof-res-total').innerText='---'; el('dof-unit').innerText='mm';
-        el('dof-res-near').innerText='---'; el('dof-res-far').innerText='---';
-        el('dof-coc-note').innerText='';
-        el('dof-bar-fill').style.cssText='left:50%;width:0%;';
-        el('dof-bar-focus').style.left='50%';
-        el('dof-bar-near-lbl').innerText='---'; el('dof-bar-far-lbl').innerText='---';
-        el('dof-bar-focus-lbl').innerText='';
-    };
-    if (sw<=0||focal<=0||fnum<=0||dist<=0) { reset(); return; }
-    const coc = diag/1442;
-    const H = (focal*focal)/(fnum*coc)+focal;
-    const near = (dist*(H-focal))/(H+dist-2*focal);
-    let far, dofTotal, farInf=false;
-    if (dist>=H) { far=Infinity; farInf=true; dofTotal=Infinity; }
-    else { far=(dist*(H-focal))/(H-dist); dofTotal=far-near; }
-
-    if (farInf) { el('dof-res-total').innerText='∞'; el('dof-unit').innerText=''; }
-    else {
-        const useM=dofTotal>=1000;
-        el('dof-unit').innerText=useM?'m':'mm';
-        el('dof-res-total').innerText=useM?(dofTotal/1000).toFixed(2):dofTotal.toFixed(1);
-    }
-    el('dof-res-near').innerText=fmtMm(near);
-    el('dof-res-far').innerText=farInf?t.inf:fmtMm(far);
-    el('dof-coc-note').innerText='CoC: '+coc.toFixed(4)+' mm  (diag: '+diag.toFixed(2)+' mm)';
-
-    const bf=el('dof-bar-fill'), bfocus=el('dof-bar-focus');
-    if (!farInf&&near>0&&far>0) {
-        const minR=near*0.5, maxR=far*1.5, span=maxR-minR;
-        const nP=((near-minR)/span)*100, fP=((far-minR)/span)*100, dP=((dist-minR)/span)*100;
-        bf.style.left=Math.max(0,nP).toFixed(1)+'%';
-        bf.style.width=Math.min(100,fP-nP).toFixed(1)+'%';
-        bfocus.style.left=Math.min(100,Math.max(0,dP)).toFixed(1)+'%';
-        el('dof-bar-near-lbl').innerText=fmtMm(near);
-        el('dof-bar-far-lbl').innerText=fmtMm(far);
-    } else {
-        bf.style.left='0%'; bf.style.width='100%'; bfocus.style.left='30%';
-        el('dof-bar-near-lbl').innerText=fmtMm(near);
-        el('dof-bar-far-lbl').innerText=t.inf;
-    }
-    el('dof-bar-focus-lbl').innerText='▲ '+fmtMm(dist);
-}
-
-function updateLanguage() {
-    lang = el('lang-select').value;
-    const t = T[lang];
+function updateLanguage(){
+    lang=el('lang-select').value; const t=T[lang];
     el('tab-fov').innerText=t.tab_fov; el('tab-focal').innerText=t.tab_focal;
     el('tab-dist').innerText=t.tab_dist; el('tab-dof').innerText=t.tab_dof;
     el('lbl-fov-sensor').innerText=t.lbl_sensor; el('lbl-fov-focal').innerText=t.lbl_focal_len; el('lbl-fov-dist').innerText=t.lbl_dist;
@@ -478,22 +337,18 @@ function updateLanguage() {
     el('lbl-dist-sensor').innerText=t.lbl_sensor; el('lbl-dist-focal').innerText=t.lbl_focal_len; el('lbl-dist-target').innerText=t.lbl_target;
     el('lbl-dof-sensor').innerText=t.lbl_sensor; el('lbl-dof-focal').innerText=t.lbl_focal_len;
     el('lbl-dof-fnum').innerText=t.lbl_fnum; el('lbl-dof-dist').innerText=t.lbl_shoot_dist;
-    el('fov-res-label').innerText=t.res_fov; el('focal-res-label').innerText=t.res_focal;
-    el('dist-res-label').innerText=t.res_dist; el('dof-res-label').innerText=t.res_dof;
-    el('lbl-dof-near').innerText=t.dof_near; el('lbl-dof-far').innerText=t.dof_far;
+    el('lbl-dof-coc').innerText=t.lbl_coc; el('dof-res-label').innerText=t.res_dof;
+    el('fov-res-label').innerText=t.res_fov; el('focal-res-label').innerText=t.res_focal; el('dist-res-label').innerText=t.res_dist;
     calcFov(); calcFocal(); calcDist(); calcDof();
 }
-
-function toggleTheme() {
-    const next = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
-    document.documentElement.setAttribute('data-theme', next);
-    el('theme-btn').innerText = next==='dark'?'🌙':'☀';
+function toggleTheme(){
+    const next=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+    document.documentElement.setAttribute('data-theme',next);
+    el('theme-btn').innerText=next==='dark'?'🌙':'☀';
 }
-
-function init() {
+function init(){
     buildSensorSelects();
-    el('dof-fslider').value=8;
-    el('dof-fnum').value=fStops[8];
+    el('dof-fslider').value=8; el('dof-fnum').value=fStops[8];
     updateLanguage();
 }
 init();
